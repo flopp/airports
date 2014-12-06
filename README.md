@@ -7,5 +7,5 @@ Website: http://airports.fraig.de/
 
 Technology
 ----------
-* Airport data from http://ourairports.com/data/
-* Satellite images via Google Maps API
+* Airport data (public domain) from http://ourairports.com/data/
+* Mapping & satellite images via Google Maps API
