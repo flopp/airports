@@ -37,19 +37,19 @@ Airport.prototype.get_google_maps_url = function() {
 var app = {
   init : function() {
     app.current = null;
-    
+
     var opt = {
-      center: new google.maps.LatLng(50.037643, 8.562409), zoom: 15, 
-      mapTypeId: google.maps.MapTypeId.SATELLITE, 
-      disableDefaultUI: true, mapTypeControl: false, navigationControl: false, disableDoubleClickZoom: false, 
-      draggable: false, scrollwheel: false, streetViewControl: false, 
+      center: new google.maps.LatLng(50.037643, 8.562409), zoom: 15,
+      mapTypeId: google.maps.MapTypeId.SATELLITE,
+      disableDefaultUI: true, mapTypeControl: false, navigationControl: false, disableDoubleClickZoom: false,
+      draggable: false, scrollwheel: false, streetViewControl: false,
       backgroundColor: '#000000'};
     app.map = new google.maps.Map($('#map')[0],opt);
 
     app.airports = [];
     $.get("data/medium_large.csv", function(data) {
       var lines = data.split(/\r\n|\n/);
-      for (var i=1; i<lines.length; i++) 
+      for (var i=1; i<lines.length; i++)
       {
         var data = lines[i].split(',');
         if (data.length == 5)
@@ -59,17 +59,17 @@ var app = {
       }
       app.loadRandomAirport();
     });
-    
+
     google.maps.event.addListener(app.map, 'click', function(event) {
       app.loadRandomAirport();
     });
-    
+
     google.maps.event.addDomListener(window, 'resize', function() {
-      if (!app.current) return;      
+      if (!app.current) return;
       app.map.setCenter(app.current.get_pos());
       google.maps.event.trigger(app.map, 'resize');
     });
-    
+
     $('#control-info').click(function() {
       app.track("control", "info");
       app.openInfoOverlay();
@@ -82,13 +82,13 @@ var app = {
       app.loadRandomAirport();
       });
   },
-  
+
   load : function(code) {
     for (var index = 0; index < app.airports.length; ++index) {
       if (app.airports[index].get_code() != code) {
         continue;
       }
-      
+
       app.current = app.airports[index];
       app.updateLabel();
       app.map.setCenter(app.current.get_pos());
@@ -96,12 +96,12 @@ var app = {
       break;
     }
   },
-  
+
   openGoogleMaps : function() {
     app.track("control", "google-maps", "airport", app.current.get_label());
     window.open(app.current.get_google_maps_url(), '_blank');
   },
-  
+
   openInfoOverlay : function() {
     $('#controls').fadeOut(1000);
     $('#label').fadeOut(1000);
@@ -110,25 +110,25 @@ var app = {
       app.closeInfoOverlay();
     });
   },
-  
+
   closeInfoOverlay : function() {
     $('#info-overlay').fadeOut(1000);
     $('#controls').fadeIn(1000);
     $('#label').fadeIn(1000);
   },
-  
+
   updateLabel : function() {
     $('#label').html(app.current.get_label());
   },
-  
+
   loadRandomAirport : function() {
     if (app.airports.length == 0) {
       return;
     }
-      
+
     var index =  Math.floor(Math.random() * app.airports.length);
     app.current = app.airports[index];
-    
+
     $('#container').prepend($('#map').clone(false).attr('id','map-buffer'));
     google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
       setTimeout(function(){
@@ -141,12 +141,12 @@ var app = {
     setTimeout(function(){
       $('#map-buffer').remove();
       app.updateLabel();
-    }, 3000);    
-    
+    }, 3000);
+
     app.map.setCenter(app.current.get_pos());
     app.map.setZoom(app.current.get_zoom());
   },
-  
+
   track : function(category,action,label,value) {
     if(_gaq) _gaq.push(['_trackEvent', category, action, label, value]);
   }
@@ -156,7 +156,7 @@ var _gaq = _gaq || [];
 
 $(document).ready(function(){
   app.init();
-  
+
   _gaq.push(['_setAccount', 'UA-27729857-5']);
   _gaq.push(['_trackPageview']);
 
