@@ -13,6 +13,10 @@ Airport.prototype.m_name = "";
 Airport.prototype.m_pos = null;
 Airport.prototype.m_zoom = 15;
 
+Airport.prototype.get_code = function() {
+  return this.m_code;
+}
+
 Airport.prototype.get_pos = function() {
   return this.m_pos;
 }
@@ -60,6 +64,12 @@ var app = {
       app.loadRandomAirport();
     });
     
+    google.maps.event.addDomListener(window, 'resize', function() {
+      if (!app.current) return;      
+      app.map.setCenter(app.current.get_pos());
+      google.maps.event.trigger(app.map, 'resize');
+    });
+    
     $('#control-info').click(function() {
       app.track("control", "info");
       app.openInfoOverlay();
@@ -71,6 +81,20 @@ var app = {
       app.track("control", "next");
       app.loadRandomAirport();
       });
+  },
+  
+  load : function(code) {
+    for (var index = 0; index < app.airports.length; ++index) {
+      if (app.airports[index].get_code() != code) {
+        continue;
+      }
+      
+      app.current = app.airports[index];
+      app.updateLabel();
+      app.map.setCenter(app.current.get_pos());
+      app.map.setZoom(app.current.get_zoom());
+      break;
+    }
   },
   
   openGoogleMaps : function() {
