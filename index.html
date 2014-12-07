@@ -3,16 +3,60 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic' rel='stylesheet' type='text/css'>
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic" rel="stylesheet" type="text/css">
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB_j3LISS-viQhLTjnRuhXU1FCONp2dwtQ&language=en&sensor=false"></script>
-  <script type="text/javascript" src="airports.js"></script>
-  <link type="text/css" rel="stylesheet" href="main.css">
+  <script type="text/javascript" src="js/airports.js"></script>
+  <link type="text/css" rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
   <div id="container">
     <div id="map"></div>
   </div>
+  
   <div id="label">Some Place on Earth</div>
+  
+  <div id="controls">
+    <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
+    <div class="my-control" id="control-google-maps" title="open in google maps"><i class="fa fa-2x fa-globe"></i></div>
+    <div class="my-control" id="control-next" title="advance to next airport"><i class="fa fa-2x fa-forward"></i></div>
+  </div>
+  
+  <div id="info-overlay">
+    <div>
+      <p>
+        This app shows satellite views of random airports. It is heavily inspired by David Schmidt's website <a href="chuchichechocha.com" target="_blank">chuchichechocha.com</a>.
+      </p>
+      
+      <h2>Usage</h2>
+      <ul>
+        <li>Click on the satellite image or on the <i class="fa fa-forward"></i> button in the control panel to advance to another randomly selected airport.</li>
+        <li>Click on the <i class="fa fa-globe"></i> button in the control panel to open the current view in Google Maps.</li>
+        <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
+      </ul>
+      
+      <h2>Technologies and Data Sources</h2>
+      <p>
+        This app is based on the <a href="https://developers.google.com/maps/" target="_blank">Google Maps API</a>, which on the one hand provides a powerful programming interface for web-based mapping applications, and on the other hand opens access to high quality satellite imagery for places all over the world.
+      </p>
+      <p>
+        The locations of airports have been imported from the public domain data provided by the aviation enthusiasts at <a href="http://ourairports.com/data/" target="_blank">OurAirports.com</a>. The app displays randomly selected airports of the categories 'large_airport' and 'medium_airport'.
+      </p>
+      <p>
+        Furthermore, the user interface incorporates icons from <a href="http://fontawesome.io/" target="_blank">Font Awesome</a> and fonts from <a href="http://www.google.com/fonts" target="_blank">Google Fonts</a>.
+      </p>
+      
+      <h2>Author</h2>
+      <p>
+        This is brought to you by me, Florian Pigorsch. 
+        Feel free to contact me via <a href="https://google.com/+FlorianPigorsch" target="_blank">Google+</a> or <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
+      </p>
+      
+      <button class="my-btn">Close</button>
+    </div>
+  </div>
 </body>
+
 </html>
