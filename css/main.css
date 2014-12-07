@@ -3,6 +3,26 @@ html, body {
   height: 100%;
   overflow: hidden; }
 
+/* unvisited link */
+a:link {
+  color: #FF0;
+}
+
+/* visited link */
+a:visited {
+    color: #DD0;
+}
+
+/* mouse over link */
+a:hover {
+    color: #FF0;
+}
+
+/* selected link */
+a:active {
+    color: #FF0;
+}
+
 #container {
   position: absolute;
   left: 0;
