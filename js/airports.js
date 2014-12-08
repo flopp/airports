@@ -5,7 +5,7 @@ function Airport(data) {
   var lng = parseFloat(data[4]);
   this.m_pos = new google.maps.LatLng(lat, lng);
   this.m_zoom = 15;
-  if (data[2] == "S") this.m_zoom = 16;
+  if (data[2] == "M") this.m_zoom = 16;
 }
 
 Airport.prototype.m_code = "";
