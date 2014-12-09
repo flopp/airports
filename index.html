@@ -15,7 +15,9 @@
   <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB_j3LISS-viQhLTjnRuhXU1FCONp2dwtQ&language=en&sensor=false"></script>
+  <script type="text/javascript" src="js/isocountries.js"></script>
   <script type="text/javascript" src="js/airports.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
   <link type="text/css" rel="stylesheet" href="css/main.css">
 </head>
 
@@ -32,7 +34,8 @@
   <div id="controls">
     <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
     <div class="my-control" id="control-google-maps" title="open in google maps"><i class="fa fa-2x fa-globe"></i></div>
-    <div class="my-control" id="control-next" title="advance to next airport"><i class="fa fa-2x fa-play-circle"></i></div>
+    <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
+    <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
   </div>
 
   <div id="info-overlay">
@@ -43,8 +46,9 @@
 
       <h2>Usage</h2>
       <ul>
-        <li>Click on the satellite image or on the <i class="fa fa-play-circle"></i> button in the control panel to advance to another randomly selected airport.</li>
         <li>Click on the <i class="fa fa-globe"></i> button in the control panel to open the current view in Google Maps.</li>
+        <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
+        <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every minute a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
         <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
       </ul>
 
