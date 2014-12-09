@@ -317,7 +317,12 @@ var app = {
       'ZM' : 'Zambia',
       'ZW' : 'Zimbabwe'
     };
- 
+    
+    app.static_airports = [
+      new Airport(["EDDF","Frankfurt am Main International Airport","L","49.9984","8.49708","50.0458","8.58698","DE","Frankfurt-am-Main"]),
+      new Airport(["OMDB","Dubai International Airport","L","25.2433","55.347","25.2665","55.3815","AE","Dubai"]),
+      new Airport(["KSFO","San Francisco International Airport","L","37.6068","-122.393","37.6287","-122.357","US","San Francisco"])
+    ];
     app.airports = [];
     $.get("data/data.csv", function(data) {
       var lines = data.split(/\r\n|\n/);
@@ -329,9 +334,9 @@ var app = {
           app.airports.push(new Airport(data));
         }
       }
-      app.loadRandomAirport();
     });
 
+    // setup event handlers
     google.maps.event.addListener(app.map, 'click', function(event) {
       app.loadRandomAirport();
     });
@@ -352,6 +357,8 @@ var app = {
       app.track("control", "next");
       app.loadRandomAirport();
       });
+    
+    app.loadRandomAirport();
   },
 
   load : function(code) {
@@ -413,12 +420,15 @@ var app = {
   },
 
   loadRandomAirport : function() {
-    if (app.airports.length == 0) {
+    if (app.airports.length > 0) {
+      var index =  Math.floor(Math.random() * app.airports.length);
+      app.current = app.airports[index];
+    } else if (app.static_airports.length > 0) {
+      var index =  Math.floor(Math.random() * app.static_airports.length);
+      app.current = app.static_airports[index];
+    } else {
       return;
-    }
-
-    var index =  Math.floor(Math.random() * app.airports.length);
-    app.current = app.airports[index];
+    } 
 
     $('#container').prepend($('#map').clone(false).attr('id','map-buffer'));
     google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
