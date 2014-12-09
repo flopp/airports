@@ -56,6 +56,11 @@ var app = {
       app.track("control", "play");
       app.toggleAutoPlay();
       });
+    $('#info-overlay').click(function() {
+      $('#info-overlay').fadeOut(1000);
+      $('#controls').fadeIn(1000);
+      $('#label').fadeIn(1000);
+      });
     
     app.loadRandomAirport();
   },
