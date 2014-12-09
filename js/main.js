@@ -32,7 +32,7 @@ var app = {
 
     // setup event handlers
     google.maps.event.addListener(app.map, 'click', function(event) {
-      app.track("control", "map-click");
+      app.track("map", "click");
       app.loadRandomAirport();
     });
 
@@ -93,7 +93,10 @@ var app = {
     } else {
       app.autoplay = true;
       $('#control-play > i').removeClass('fa-play').addClass('fa-pause');
-      app.autoplay_interval = setInterval(function() { app.loadRandomAirport(); }, 60 * 1000);
+      app.autoplay_interval = setInterval(function() { 
+        app.track("autoplay", "load");
+        app.loadRandomAirport(); 
+        }, 60 * 1000);
     }
   },
   
