@@ -1,5 +1,6 @@
 var app = {
   init : function() {
+    app.loading = false;
     app.current = null;
     app.autoplay = false;
     app.autoplay_timer = null;
@@ -93,7 +94,7 @@ var app = {
   toggleAutoPlay : function () {
     if (app.autoplay) {
       clearInterval(app.autoplay_timer);
-      app.autoplay = true;
+      app.autoplay = false;
       $('#control-play > i').removeClass('fa-pause').addClass('fa-play');
     } else {
       app.autoplay = true;
@@ -130,7 +131,37 @@ var app = {
     $('#location').html(app.current.get_location_name());
   },
 
+  onStartLoading : function() {
+    if (!app.loading) {
+      return;
+    }
+    
+    $('#control-random > i').addClass('fa-spin');
+    $('#container').prepend($('#map').clone(false).attr('id','map-buffer'));
+  },
+  
+  onFinishLoading : function() {
+    if (!app.loading) {
+      return;
+    }
+    
+    var map_buffer = $('#map-buffer');
+    if (map_buffer) {
+      map_buffer.remove();
+    }
+    
+    app.updateLabel();
+    $('#control-random > i').removeClass('fa-spin');
+    app.loading = false;
+  },
+  
   loadRandomAirport : function() {
+    if (app.loading) {
+      return;
+    }
+    app.loading = true;
+    app.onStartLoading();
+    
     if (app.airports.length > 0) {
       var index =  Math.floor(Math.random() * app.airports.length);
       app.current = app.airports[index];
@@ -141,19 +172,12 @@ var app = {
       return;
     } 
 
-    $('#container').prepend($('#map').clone(false).attr('id','map-buffer'));
     google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
       setTimeout(function(){
-        $('#map-buffer').fadeOut(1000, function(){
-          $(this).remove();
-          app.updateLabel();
-          });
+        $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
         }, 2000);
       });
-    setTimeout(function(){
-      $('#map-buffer').remove();
-      app.updateLabel();
-    }, 3000);
+    setTimeout(function(){ app.onFinishLoading(); }, 3000);
 
     app.fitMap();
   },
