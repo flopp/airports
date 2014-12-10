@@ -58,14 +58,20 @@ var app = {
       app.toggleAutoPlay();
       });
     $('#info-overlay').click(function() {
+      // don't close info overlay when clicking on a link
       if (event.target && event.target.tagName == 'A') {
         event.stopPropagation();
+        app.track('info-overlay', 'link', 'href', event.target.href);
         return;
       }
-      $('#info-overlay').fadeOut(1000);
-      $('#controls').fadeIn(1000);
-      $('#label').fadeIn(1000);
+      app.track('info-overlay', 'background', 'click');
+      app.closeInfoOverlay();
       });
+    $('#info-overlay button').click(function(){
+      event.stopPropagation();
+      app.track('info-overlay', 'close-button', 'click');
+      app.closeInfoOverlay();
+    });
     
     app.loadRandomAirport();
   },
@@ -113,22 +119,20 @@ var app = {
   
   openGoogleMaps : function() {
     app.track("control", "google-maps", "airport", app.current.get_label());
-    window.open(app.current.get_google_maps_url(), '_blank');
+    var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
+    window.open(url, '_blank');
   },
 
   openInfoOverlay : function() {
     $('#controls').fadeOut(1000);
-    $('#label').fadeOut(1000);
+    $('#label-container').fadeOut(1000);
     $('#info-overlay').fadeIn(1000);
-    $('#info-overlay button').click(function(){
-      app.closeInfoOverlay();
-    });
   },
 
   closeInfoOverlay : function() {
     $('#info-overlay').fadeOut(1000);
     $('#controls').fadeIn(1000);
-    $('#label').fadeIn(1000);
+    $('#label-container').fadeIn(1000);
   },
 
   updateLabel : function() {

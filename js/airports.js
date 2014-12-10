@@ -52,7 +52,3 @@ Airport.prototype.get_location_name = function() {
     return "Somewhere in " + getCountryName(this.m_country);
   }
 }
-
-Airport.prototype.get_google_maps_url = function() {
-  return "https://www.google.com/maps/@" + this.get_pos().lat().toFixed(6) + "," + this.get_pos().lng().toFixed(6) + "," + this.m_zoom + "z";
-}
