@@ -114,6 +114,7 @@ __isoCountries = {
   'KZ' : 'Kazakhstan',
   'KE' : 'Kenya',
   'KI' : 'Kiribati',
+  'KP' : 'Democratic People\'s Republic of Korea',
   'KR' : 'Korea',
   'KW' : 'Kuwait',
   'KG' : 'Kyrgyzstan',
