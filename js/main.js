@@ -99,7 +99,7 @@ var app = {
     } else {
       app.autoplay = true;
       $('#control-play > i').removeClass('fa-play').addClass('fa-pause');
-      app.autoplay_interval = setInterval(function() { 
+      app.autoplay_timer = setInterval(function() { 
         app.track("autoplay", "load");
         app.loadRandomAirport(); 
         }, 60 * 1000);
