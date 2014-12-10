@@ -58,6 +58,10 @@ var app = {
       app.toggleAutoPlay();
       });
     $('#info-overlay').click(function() {
+      if (event.target && event.target.tagName == 'A') {
+        event.stopPropagation();
+        return;
+      }
       $('#info-overlay').fadeOut(1000);
       $('#controls').fadeIn(1000);
       $('#label').fadeIn(1000);
@@ -94,8 +98,9 @@ var app = {
   toggleAutoPlay : function () {
     if (app.autoplay) {
       clearInterval(app.autoplay_timer);
-      app.autoplay = false;
+      app.autoplay_timer = null;
       $('#control-play > i').removeClass('fa-pause').addClass('fa-play');
+      app.autoplay = false;
     } else {
       app.autoplay = true;
       $('#control-play > i').removeClass('fa-play').addClass('fa-pause');
