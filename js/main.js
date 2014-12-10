@@ -14,18 +14,16 @@ var app = {
     app.map = new google.maps.Map($('#map')[0],opt);
     
     app.static_airports = [
-      new Airport(["EDDF","Frankfurt am Main International Airport","L","49.9984","8.49708","50.0458","8.58698","DE","Frankfurt-am-Main"]),
-      new Airport(["OMDB","Dubai International Airport","L","25.2433","55.347","25.2665","55.3815","AE","Dubai"]),
-      new Airport(["KSFO","San Francisco International Airport","L","37.6068","-122.393","37.6287","-122.357","US","San Francisco"])
+      new Airport(["EDDF","FRA","Frankfurt am Main International Airport","L","49.9984","8.49708","50.0458","8.58698","DE","Frankfurt-am-Main"]),
+      new Airport(["OMDB","DXB","Dubai International Airport","L","25.2433","55.347","25.2665","55.3815","AE","Dubai"]),
+      new Airport(["KSFO","SFO","San Francisco International Airport","L","37.6068","-122.393","37.6287","-122.357","US","San Francisco"])
     ];
     app.airports = [];
     $.get("data/data.csv", function(data) {
       var lines = data.split(/\r\n|\n/);
-      for (var i=1; i<lines.length; i++)
-      {
+      for (var i=1; i<lines.length; i++) {
         var data = lines[i].split(',');
-        if (data.length == 9)
-        {
+        if (data.length == 10) {
           app.airports.push(new Airport(data));
         }
       }
@@ -77,15 +75,29 @@ var app = {
   },
 
   load : function(code) {
+    code = code.toUpperCase();
+    var found_index = -1;
+    
     for (var index = 0; index < app.airports.length; ++index) {
-      if (app.airports[index].get_code() != code) {
-        continue;
+      if (app.airports[index].get_code().toUpperCase() == code || app.airports[index].get_iata().toUpperCase() == code) {
+        found_index = index;
+        break;
       }
-
-      app.current = app.airports[index];
+    }
+    
+    if (found_index == -1) {
+      for (var index = 0; index < app.airports.length; ++index) {
+        if (app.airports[index].get_label().toUpperCase().indexOf(code) >= 0) {
+          found_index = index;
+          break;
+        }
+      }
+    }
+    
+    if (found_index != -1) {
+      app.current = app.airports[found_index];
       app.updateLabel();
       app.fitMap();
-      break;
     }
   },
 

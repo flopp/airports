@@ -102,10 +102,23 @@ class Airport:
             }.get(type, '?')
 
     def to_csv_string(self):
-        return "{0},{1},{2},{3},{4},{5},{6},{7},{8}"\
-            .format(self.__ident, self.__name, self.shorten_type(self.__type),
-                    self.__bounds.get_min()[0], self.__bounds.get_min()[1],
-                    self.__bounds.get_max()[0], self.__bounds.get_max()[1],
+        iata = self.__iata_code
+        if iata == self.__ident:
+          iata = ""
+        
+        latlng1 = self.__bounds.get_min()
+        latlng2 = self.__bounds.get_max()
+        if latlng1 == latlng2:
+          latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
+          latlng2 = ('', '')
+        else:
+          latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
+          latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
+        
+        return "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}"\
+            .format(self.__ident, iata, self.__name, self.shorten_type(self.__type),
+                    latlng1[0], latlng1[1],
+                    latlng2[0], latlng2[1],
                     self.__iso_country, self.__municipality)
 
     def compute_bounds(self, runways):
