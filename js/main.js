@@ -136,6 +136,7 @@ var app = {
   },
 
   updateLabel : function() {
+    $(document).attr('title', app.current.get_label() + ' - Random Airports');
     $('#label').html(app.current.get_label());
     $('#location').html(app.current.get_location_name());
   },
