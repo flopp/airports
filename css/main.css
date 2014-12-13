@@ -49,6 +49,49 @@ a:active {
   background-color: transparent;
 }
 
+
+#message-container {
+    display: none;
+    background-color:rgba(255, 0, 0, 0.5);
+    position:absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 48px;
+    z-index:300;
+    color:#fff;
+    text-shadow:0px 0px 4px #000;
+    border-radius: 6px;
+}
+
+#control-dismiss-message {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+@media (min-width: 800px) {
+#message {
+  position: absolute;
+  left: 48px;
+  top: 0px;
+  line-height:48px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+}
+}
+
+@media (max-width: 799px) {
+#message {
+  position: absolute;
+  left: 48px;
+  top: 0px;
+  line-height:48px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+}
+}
+
 @media (min-width: 800px) {
 #label-container {
   z-index: 300;

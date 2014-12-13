@@ -1,32 +1,24 @@
 var app = {
-  init : function() {
+  init : function(query_id) {
+    app.query_id = app.sanitize_query_id(query_id);
     app.loading = false;
     app.current = null;
     app.autoplay = false;
     app.autoplay_timer = null;
     
     var opt = {
-      center: new google.maps.LatLng(50.037643, 8.562409), zoom: 15,
+      //center: new google.maps.LatLng(50.037643, 8.562409), zoom: 15,
       mapTypeId: google.maps.MapTypeId.SATELLITE,
       disableDefaultUI: true, mapTypeControl: false, navigationControl: false, disableDoubleClickZoom: false,
       draggable: false, scrollwheel: false, streetViewControl: false,
       backgroundColor: '#000000'};
     app.map = new google.maps.Map($('#map')[0],opt);
     
-    app.static_airports = [
-      new Airport(["EDDF","FRA","Frankfurt am Main International Airport","L","49.9984","8.49708","50.0458","8.58698","DE","Frankfurt-am-Main"]),
-      new Airport(["OMDB","DXB","Dubai International Airport","L","25.2433","55.347","25.2665","55.3815","AE","Dubai"]),
-      new Airport(["KSFO","SFO","San Francisco International Airport","L","37.6068","-122.393","37.6287","-122.357","US","San Francisco"])
-    ];
-    app.airports = [];
-    $.get("data/data.csv", function(data) {
-      var lines = data.split(/\r\n|\n/);
-      for (var i=1; i<lines.length; i++) {
-        var data = lines[i].split(',');
-        if (data.length == 10) {
-          app.airports.push(new Airport(data));
-        }
-      }
+    app.airport_ids = [];
+    $.get("api.php?list", function(data) {
+      var json = $.parseJSON(data);
+      app.airport_ids = json.ids;
+      app.loadRandomAirport();
     });
 
     // setup event handlers
@@ -71,40 +63,38 @@ var app = {
       app.closeInfoOverlay();
     });
     
-    app.loadRandomAirport();
+    $('#control-dismiss-message').click(function() {
+      app.track("control", "dismiss-message");
+      app.closeMessage();
+    });
+    $('#message-container').click(function(){
+      app.track('message-container', 'background', 'click');
+      app.closeMessage();
+    });
   },
 
-  load : function(code) {
-    code = code.toUpperCase();
-    var found_index = -1;
-    
-    for (var index = 0; index < app.airports.length; ++index) {
-      if (app.airports[index].get_code().toUpperCase() == code || app.airports[index].get_iata().toUpperCase() == code) {
-        found_index = index;
-        break;
-      }
-    }
-    
-    if (found_index == -1) {
-      for (var index = 0; index < app.airports.length; ++index) {
-        if (app.airports[index].get_label().toUpperCase().indexOf(code) >= 0) {
-          found_index = index;
-          break;
-        }
-      }
-    }
-    
-    if (found_index != -1) {
-      app.current = app.airports[found_index];
-      app.updateLabel();
-      app.fitMap();
+  displayMessage : function(message) {
+    $('#message').html(message);
+    $('#message-container').fadeIn(500);
+  },
+  
+  closeMessage : function() {
+    $('#message-container').fadeOut(500);
+  },
+  
+  sanitize_query_id : function(id) {
+    if (id) {
+      app.track('init', 'query', 'id', id);
+      return id.toUpperCase().replace(/[^A-Za-z0-9-]/g, '');
+    } else {
+      return '';
     }
   },
-
+  
   fitMap : function() {
-    if (!app.current) {
-      return;
-    }
+    if (!app.current) return;
+    
+    google.maps.event.trigger(app.map, 'resize');
     app.map.setCenter(app.current.get_pos());
     if (app.current.get_bounds().getNorthEast().equals(app.current.get_bounds().getSouthWest())) {
       app.map.setZoom(app.current.get_zoom());
@@ -130,6 +120,7 @@ var app = {
   },
   
   openGoogleMaps : function() {
+    if (!app.current) return;
     app.track("control", "google-maps", "airport", app.current.get_label());
     var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
     window.open(url, '_blank');
@@ -148,6 +139,7 @@ var app = {
   },
 
   updateLabel : function() {
+    if (!app.current) return;
     $(document).attr('title', app.current.get_label() + ' - Random Airports');
     $('#label').html(app.current.get_label());
     $('#location').html(app.current.get_location_name());
@@ -184,24 +176,49 @@ var app = {
     app.loading = true;
     app.onStartLoading();
     
-    if (app.airports.length > 0) {
-      var index =  Math.floor(Math.random() * app.airports.length);
-      app.current = app.airports[index];
-    } else if (app.static_airports.length > 0) {
-      var index =  Math.floor(Math.random() * app.static_airports.length);
-      app.current = app.static_airports[index];
-    } else {
-      return;
-    } 
-
-    google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
+    var id = '';
+    if (app.query_id != '') {
+      if ($.inArray(app.query_id, app.airport_ids) >= 0) {
+        id = app.query_id;
+      } else {
+        app.track('error', 'Requested airport (' + app.query_id + ') cannot be found. Loading random airport');
+        app.displayMessage('Requested airport (' + app.query_id + ') cannot be found. Loading random airport');
+      }
+      app.query_id = '';
+    }
+    if (id == '') {
+      if (app.airport_ids.length > 0) {
+        var index =  Math.floor(Math.random() * app.airport_ids.length);
+        id = app.airport_ids[index];
+      }
+    }
+    if (id == '') {
+      id = 'EDDF';
+    }
+    
+    console.log("loading " + id + "...");
+    
+    $.get("api.php?id=" + id, function(data) {
+      var json = $.parseJSON(data);
+      if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
+      app.current = new Airport;
+      app.current.load_from_json(json.airport);
+      
+      google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
       setTimeout(function(){
         $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
         }, 2000);
       });
-    setTimeout(function(){ app.onFinishLoading(); }, 3000);
+      setTimeout(function(){ app.onFinishLoading(); }, 3000);
 
-    app.fitMap();
+      app.fitMap();
+    } else {
+      app.track('error', 'Error loading requested airport (' + id + ')');
+      app.displayMessage('Error loading requested airport (' + id + ')');
+      app.current = null;
+      app.onFinishLoading();
+    }
+    });
   },
 
   track : function(category,action,label,value) {
@@ -211,8 +228,16 @@ var app = {
 
 var _gaq = _gaq || [];
 
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 $(document).ready(function(){
-  app.init();
+  var query_id = getParameterByName('id');
+  app.init(query_id);
 
   _gaq.push(['_setAccount', 'UA-27729857-5']);
   _gaq.push(['_trackPageview']);

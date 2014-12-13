@@ -15,8 +15,10 @@ if (!empty($_GET))
     }
     else if (isset($_GET['id']))
     {
-        $mode = "id";        
-        $id = strtoupper($_GET['id']);
+        $mode = "id"; 
+        $id = $_GET['id'];
+        $id = strtoupper($id);
+        $id = preg_replace("/[^[:alnum:]-]/", '', $id);
     }
 }
 
