@@ -87,6 +87,7 @@ a:active {
 
 @media (min-width: 800px) {
 #label-container {
+  display: none;
   z-index: 300;
   background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
@@ -110,7 +111,7 @@ a:active {
 }
 
 #controls {
-  display: block;
+  display: none;
   background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
   top: 40px;
@@ -126,6 +127,7 @@ a:active {
 
 @media (max-width: 799px) {
   #label-container {
+    display: none;
     z-index:300;
     background-color:rgba(0, 0, 0, 0.3);
     position:absolute;
@@ -148,7 +150,7 @@ a:active {
   }
 
   #controls {
-    display: block;
+    display: none;
     background-color:rgba(0, 0, 0, 0.3);
     position:absolute;
     top:100px;
@@ -178,7 +180,7 @@ a:active {
 
 
 #info-overlay {
-  overflow-y: scroll;
+  overflow-y: auto;
   position: absolute;
   top:0;
   left:0;
@@ -191,8 +193,22 @@ a:active {
   font-style: italic;
 }
 
+#welcome-overlay {
+  overflow-y: auto;
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:1000;
+  background:rgba(0,0,0,0.75);
+  display:block;
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+}
+
 #search-overlay {
-  overflow-y: scroll;
+  overflow-y: auto;
   position: absolute;
   top:0;
   left:0;
@@ -218,6 +234,21 @@ a:active {
 
 #info-overlay h2 {
   font-size: 24px;
+  font-weight: bold;
+}
+
+#welcome-overlay div {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 60%;
+  color: white;
+  text-shadow:0px 0px 4px #000;
+  font-size: 24px;
+}
+
+#welcome-overlay h1 {
+  font-size: 36px;
   font-weight: bold;
 }
 
@@ -283,6 +314,21 @@ a:active {
   }
 
   #info-overlay h2 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  #welcome-overlay div {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: 96%;
+    color: white;
+    text-shadow:0px 0px 4px #000;
+    font-size: 10px;
+  }
+
+  #welcome-overlay h1 {
     font-size: 16px;
     font-weight: bold;
   }

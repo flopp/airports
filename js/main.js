@@ -60,6 +60,16 @@ var app = {
       app.track("control", "play");
       app.toggleAutoPlay();
       });
+    
+    $('#welcome-overlay').click(function() {
+      app.track('welcome-overlay', 'background', 'click');
+      app.closeWelcomeOverlay();
+      });
+    $('#welcome-overlay button').click(function(){
+      app.track('welcome-overlay', 'close-button', 'click');
+      app.closeWelcomeOverlay();
+    });
+    
     $('#info-overlay').click(function() {
       // don't close info overlay when clicking on a link
       if (event.target && event.target.tagName == 'A') {
@@ -182,6 +192,12 @@ var app = {
     window.open(url, '_blank');
   },
 
+  closeWelcomeOverlay : function() {
+    $('#welcome-overlay').fadeOut(500);
+    $('#controls').fadeIn(500);
+    $('#label-container').fadeIn(500);
+  },
+  
   openInfoOverlay : function() {
     $('#controls').fadeOut(500);
     $('#label-container').fadeOut(500);
@@ -204,6 +220,11 @@ var app = {
   onStartLoading : function() {
     if (!app.loading) {
       return;
+    }
+    
+    var map_buffer = $('#map-buffer');
+    if (map_buffer) {
+      map_buffer.remove();
     }
     
     $('#control-random > i').addClass('fa-spin');
