@@ -103,7 +103,12 @@ class Airport:
             'closed': 'C',
             'heliport': 'H'
         }.get(type, '?')
-
+    
+    def non_empty_bounds(self):
+      latlng1 = self.__bounds.get_min()
+      latlng2 = self.__bounds.get_max()
+      return latlng1 != latlng2
+    
     def to_csv_string(self):
         iata = self.__iata_code
         if iata == self.__ident:
@@ -182,12 +187,15 @@ class AirportsTable:
         db.commit()
 
         cur = db.cursor()
+        count = 0
         for airport in self.__items:
-            if airport.type() in ["large_airport", "medium_airport"]:
+            if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()):
+                count = count + 1
                 values = airport.to_sql_string()
                 cur.execute("INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2) VALUES ({0});"
                             .format(values))
         db.commit()
+        print("airports {0}".format(count))
 
 
 class Runway:
@@ -294,5 +302,5 @@ if __name__ == "__main__":
     airports = AirportsTable("airports.csv")
     runways = RunwaysTable("runways.csv")
     airports.compute_bounds(runways.to_dict())
-    airports.print_csv("data.csv")
+    #airports.print_csv("data.csv")
     airports.to_sql("airports.sqlite")

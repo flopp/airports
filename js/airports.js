@@ -28,8 +28,10 @@ Airport.prototype.load_from_array = function(data) {
   }
   this.m_bounds = new google.maps.LatLngBounds(latlng0, latlng1);
   if (!latlng0.equals(latlng1)) {
-    this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-0.001, latlng0.lng()-0.001));
-    this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+0.001, latlng1.lng()+0.001));
+    var lat_margin = 0.05 * Math.abs(latlng0.lat() - latlng1.lat());
+    var lng_margin = 0.05 * Math.abs(latlng0.lng() - latlng1.lng());
+    this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-lat_margin, latlng0.lng()-lng_margin));
+    this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+lat_margin, latlng1.lng()+lng_margin));
   } 
   
   var type = data[3];
@@ -56,8 +58,10 @@ Airport.prototype.load_from_json = function(json) {
   var latlng1 = new google.maps.LatLng(parseFloat(json.lat2), parseFloat(json.lng2));
   this.m_bounds = new google.maps.LatLngBounds(latlng0, latlng1);
   if (!latlng0.equals(latlng1)) {
-    this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-0.001, latlng0.lng()-0.001));
-    this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+0.001, latlng1.lng()+0.001));
+    var lat_margin = 0.05 * Math.abs(latlng0.lat() - latlng1.lat());
+    var lng_margin = 0.05 * Math.abs(latlng0.lng() - latlng1.lng());
+    this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-lat_margin, latlng0.lng()-lng_margin));
+    this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+lat_margin, latlng1.lng()+lng_margin));
   }  
 }
 

@@ -28,22 +28,32 @@
   </div>
 
   <div id="label-container">
-    <div id="label">Some Place on Earth</div>
+    <div id="label">Random Airports</div>
     <div id="location"></div>
   </div>
   
   <div id="message-container">
-    <div id="message"></div>
-    <div class="my-control" id="control-dismiss-message" title="dismiss error message"><i class="fa fa-2x fa-times"></i></div>
   </div>
   
   <div id="controls">
     <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
+    <div class="my-control" id="control-search" title="search airport"><i class="fa fa-2x fa-search"></i></div>
     <div class="my-control" id="control-google-maps" title="open in google maps"><i class="fa fa-2x fa-globe"></i></div>
     <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
     <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
   </div>
 
+  <div id="search-overlay" style="display: none">
+    <div id="search-overlay-content">
+      <p>Search for ICAO codes of airports:</p>
+      <input type="text" name="search-overlay-query" id="search-overlay-query" placeholder="Search term">
+      <div id="search-overlay-buttons">
+        <button class="my-btn" id="search-overlay-search">Search</button>
+        <button class="my-btn" id="search-overlay-close">Close</button>
+      </div>
+    </div>
+  </div>
+  
   <div id="info-overlay">
     <div>
       <p>

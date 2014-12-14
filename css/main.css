@@ -49,46 +49,39 @@ a:active {
   background-color: transparent;
 }
 
-
+@media (min-width: 800px) {
 #message-container {
-    display: none;
-    background-color:rgba(255, 0, 0, 0.5);
-    position:absolute;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    height: 48px;
-    z-index:300;
-    color:#fff;
-    text-shadow:0px 0px 4px #000;
-    border-radius: 6px;
-}
-
-#control-dismiss-message {
+  display: none;
+  background-color: rgba(255, 0, 0, 0.75);
+  color: #fff;
   position: absolute;
   left: 0px;
-  top: 0px;
-}
-
-@media (min-width: 800px) {
-#message {
-  position: absolute;
-  left: 48px;
-  top: 0px;
-  line-height:48px;
+  right: 0px;
+  bottom: 0px;
+  z-index:300;
+  padding: 10px;
+  line-height:1.3em;
   font-family: 'Open Sans', sans-serif;
+  font-style: italic;
   font-size: 20px;
 }
 }
 
 @media (max-width: 799px) {
-#message {
+#message-container {
+  display: none;
+  background-color:rgba(255, 0, 0, 0.75);
+  color: #fff;
   position: absolute;
-  left: 48px;
-  top: 0px;
-  line-height:48px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index:300;
+  padding: 10px;
+  line-height:1.3em;
   font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
+  font-style: italic;
+  font-size: 16px;
 }
 }
 
@@ -106,6 +99,7 @@ a:active {
   color: #fff;
   text-shadow: 0px 0px 4px #000;
   font-family: 'Open Sans', sans-serif;
+  font-style: italic;
   font-size: 35px;
   border-radius: 6px;
 }
@@ -122,7 +116,7 @@ a:active {
   top: 40px;
   right: 40px;
   width: 48px;
-  height: 204px;
+  height: 244px;
   z-index:300;
   color: #fff;
   text-shadow: 0px 0px 4px #000;
@@ -144,6 +138,7 @@ a:active {
     color:#fff;
     text-shadow:0px 0px 4px #000;
     font-family: 'Open Sans', sans-serif;
+    font-style: italic;
     font-size: 20px;
   }
 
@@ -158,7 +153,7 @@ a:active {
     position:absolute;
     top:100px;
     right:0px;
-    height: 204px;
+    height: 244px;
     width: 48px;
     z-index:300;
     color:#fff;
@@ -193,6 +188,21 @@ a:active {
   background:rgba(0,0,0,0.75);
   display:none;
   font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+}
+
+#search-overlay {
+  overflow-y: scroll;
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:1000;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
 }
 
 @media (min-width: 800px) {
@@ -209,6 +219,39 @@ a:active {
 #info-overlay h2 {
   font-size: 24px;
   font-weight: bold;
+}
+
+#search-overlay-content {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 60%;
+  color: white;
+  text-shadow:0px 0px 4px #000;
+  font-size: 26px;
+}
+
+#search-overlay input {
+  width: 100%;
+  min-height: 48px;
+  font-size: 26px;
+}
+
+#search-overlay-buttons {
+  width: 100%;
+  margin-top: 48px;
+}
+
+#search-overlay-search {
+  position: absolute;
+  left: 0px;
+  width: 45%;
+}
+
+#search-overlay-close {
+  position: absolute;
+  right: 0px;
+  width: 45%;
 }
 
 .my-btn {
@@ -233,7 +276,7 @@ a:active {
     position: absolute;
     top: 2%;
     left: 2%;
-    width: 95%;
+    width: 96%;
     color: white;
     text-shadow:0px 0px 4px #000;
     font-size: 10px;
@@ -243,6 +286,39 @@ a:active {
     font-size: 16px;
     font-weight: bold;
   }
+
+#search-overlay-content {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  width: 96%;
+  color: white;
+  text-shadow:0px 0px 4px #000;
+  font-size: 16px;
+}
+
+#search-overlay input {
+  width: 100%;
+  min-height: 20px;
+  font-size: 16px;
+}
+
+#search-overlay-buttons {
+  width: 100%;
+  margin-top: 16px;
+}
+
+#search-overlay-search {
+  position: absolute;
+  left: 0px;
+  width: 45%;
+}
+
+#search-overlay-close {
+  position: absolute;
+  right: 0px;
+  width: 45%;
+}
 
   .my-btn {
     display: inline-block;

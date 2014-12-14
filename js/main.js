@@ -1,3 +1,16 @@
+$.fn.pressEnter = function(fn) {  
+    return this.each(function() {  
+        $(this).bind('enterPress', fn);
+        $(this).keyup(function(e){
+            if(e.keyCode == 13)
+            {
+              $(this).trigger("enterPress");
+            }
+        })
+    });  
+ }; 
+
+
 var app = {
   init : function(query_id) {
     app.query_id = app.sanitize_query_id(query_id);
@@ -63,23 +76,53 @@ var app = {
       app.closeInfoOverlay();
     });
     
-    $('#control-dismiss-message').click(function() {
-      app.track("control", "dismiss-message");
-      app.closeMessage();
-    });
     $('#message-container').click(function(){
       app.track('message-container', 'background', 'click');
       app.closeMessage();
     });
+    
+    $('#control-search').click(function() {
+      app.showSearch();
+      });
+    $('#search-overlay-search').click(function(){
+      app.performSearch();
+    });
+    $('#search-overlay-query').pressEnter(function(){
+      app.performSearch();
+    });
+    $('#search-overlay-close').click(function(){
+      app.closeSearch();
+    });
   },
 
   displayMessage : function(message) {
-    $('#message').html(message);
+    $('#message-container').html(message);
     $('#message-container').fadeIn(500);
   },
   
   closeMessage : function() {
     $('#message-container').fadeOut(500);
+  },
+  
+  showSearch : function() {
+    app.stopAutoPlay();
+    $('#controls').fadeOut(500);
+    $('#label-container').fadeOut(500);
+    $('#search-overlay').fadeIn(500);
+    $('#search-overlay-query').val('');
+    $('#search-overlay-query').focus();
+  },
+  
+  closeSearch : function() {
+    $('#controls').fadeIn(500);
+    $('#label-container').fadeIn(500);
+    $('#search-overlay').fadeOut(500);
+  },
+  
+  performSearch : function() {
+    app.query_id = app.sanitize_query_id($('#search-overlay-query').val());
+    app.loadRandomAirport();
+    app.closeSearch();
   },
   
   sanitize_query_id : function(id) {
@@ -103,19 +146,32 @@ var app = {
     }
   },
   
-  toggleAutoPlay : function () {
-    if (app.autoplay) {
+  startAutoPlay : function() {
+    app.autoplay = true;
+    $('#control-play > i').removeClass('fa-play').addClass('fa-pause');
+    if (app.autoplay_timer) {
+      clearInterval(app.autoplay_timer);
+    }
+    app.autoplay_timer = setInterval(function() { 
+      app.track("autoplay", "load");
+      app.loadRandomAirport(); 
+      }, 60 * 1000);
+  },
+  
+  stopAutoPlay : function() {
+    if (app.autoplay_timer) {
       clearInterval(app.autoplay_timer);
       app.autoplay_timer = null;
-      $('#control-play > i').removeClass('fa-pause').addClass('fa-play');
-      app.autoplay = false;
+    }
+    $('#control-play > i').removeClass('fa-pause').addClass('fa-play');
+    app.autoplay = false;
+  },
+  
+  toggleAutoPlay : function () {
+    if (app.autoplay) {
+      app.stopAutoPlay();
     } else {
-      app.autoplay = true;
-      $('#control-play > i').removeClass('fa-play').addClass('fa-pause');
-      app.autoplay_timer = setInterval(function() { 
-        app.track("autoplay", "load");
-        app.loadRandomAirport(); 
-        }, 60 * 1000);
+      app.startAutoPlay();
     }
   },
   
@@ -127,15 +183,15 @@ var app = {
   },
 
   openInfoOverlay : function() {
-    $('#controls').fadeOut(1000);
-    $('#label-container').fadeOut(1000);
-    $('#info-overlay').fadeIn(1000);
+    $('#controls').fadeOut(500);
+    $('#label-container').fadeOut(500);
+    $('#info-overlay').fadeIn(500);
   },
 
   closeInfoOverlay : function() {
-    $('#info-overlay').fadeOut(1000);
-    $('#controls').fadeIn(1000);
-    $('#label-container').fadeIn(1000);
+    $('#info-overlay').fadeOut(500);
+    $('#controls').fadeIn(500);
+    $('#label-container').fadeIn(500);
   },
 
   updateLabel : function() {
@@ -181,8 +237,8 @@ var app = {
       if ($.inArray(app.query_id, app.airport_ids) >= 0) {
         id = app.query_id;
       } else {
-        app.track('error', 'Requested airport (' + app.query_id + ') cannot be found. Loading random airport');
-        app.displayMessage('Requested airport (' + app.query_id + ') cannot be found. Loading random airport');
+        app.track('error', 'Requested airport (' + app.query_id + ') cannot be found. Loading random airport.');
+        app.displayMessage('Requested airport (' + app.query_id + ') cannot be found. Loading random airport.');
       }
       app.query_id = '';
     }
@@ -213,8 +269,8 @@ var app = {
 
       app.fitMap();
     } else {
-      app.track('error', 'Error loading requested airport (' + id + ')');
-      app.displayMessage('Error loading requested airport (' + id + ')');
+      app.track('error', 'Error loading requested airport (' + id + ').');
+      app.displayMessage('Error loading requested airport (' + id + ').');
       app.current = null;
       app.onFinishLoading();
     }
