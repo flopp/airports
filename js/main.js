@@ -52,8 +52,9 @@ var app = {
       app.track("control", "info");
       app.openInfoOverlay();
       });
-    $('#control-google-maps').click(function() {
-      app.openGoogleMaps();
+    $('#control-share').click(function() {
+      app.track("control", "share");
+      app.openShareOverlay();
       });
     $('#control-random').click(function() {
       app.track("control", "random");
@@ -68,7 +69,7 @@ var app = {
       app.track('welcome-overlay', 'background', 'click');
       app.closeWelcomeOverlay();
       });
-    $('#welcome-overlay button').click(function(){
+    $('#welcome-overlay .close-button').click(function(){
       app.track('welcome-overlay', 'close-button', 'click');
       app.closeWelcomeOverlay();
     });
@@ -83,7 +84,7 @@ var app = {
       app.track('info-overlay', 'background', 'click');
       app.closeInfoOverlay();
       });
-    $('#info-overlay button').click(function(){
+    $('#info-overlay .close-button').click(function(){
       event.stopPropagation();
       app.track('info-overlay', 'close-button', 'click');
       app.closeInfoOverlay();
@@ -92,6 +93,26 @@ var app = {
     $('#message-container').click(function(){
       app.track('message-container', 'background', 'click');
       app.closeMessage();
+    });
+    
+    $('#share-overlay').click(function(){
+      app.closeShareOverlay();
+    });
+    $('#share-overlay .close-button').click(function(){
+      app.closeShareOverlay();
+    });
+    
+    $('#share-overlay #open-google-maps').click(function(){
+      app.openGoogleMaps();
+      app.closeShareOverlay();
+    });
+    $('#share-overlay #open-ourairports').click(function(){
+      app.openOurAirports();
+      app.closeShareOverlay();
+    });
+    $('#share-overlay #open-flightradar24').click(function(){
+      app.openFlightRadar24();
+      app.closeShareOverlay();
     });
     
     $('#control-search').click(function() {
@@ -103,7 +124,7 @@ var app = {
     $('#search-overlay-query').pressEnter(function(){
       app.performSearch();
     });
-    $('#search-overlay-close').click(function(){
+    $('#search-overlay .close-button').click(function(){
       app.closeSearch();
     });
   },
@@ -217,12 +238,6 @@ var app = {
     } else {
       app.adjustZoom();
     }
-
-    //if (app.current.get_bounds().getNorthEast().equals(app.current.get_bounds().getSouthWest())) {
-      //app.map.setZoom(app.current.get_zoom());
-    //} else {
-      //app.map.fitBounds(app.current.get_bounds());
-    //}
   },
   
   startAutoPlay : function() {
@@ -260,6 +275,20 @@ var app = {
     var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
     window.open(url, '_blank');
   },
+  
+  openOurAirports : function() {
+    if (!app.current) return;
+    app.track("control", "ourairports", "airport", app.current.get_label());
+    var url = "http://ourairports.com/airports/" + app.current.get_code();
+    window.open(url, '_blank');
+  },
+  
+  openFlightRadar24 : function() {
+    if (!app.current) return;
+    app.track("control", "flightradar24", "airport", app.current.get_label());
+    var url = "http://www.flightradar24.com/" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "/" + Math.min(15, app.map.getZoom());
+    window.open(url, '_blank');
+  },
 
   closeWelcomeOverlay : function() {
     $('#welcome-overlay').fadeOut(500);
@@ -275,6 +304,19 @@ var app = {
 
   closeInfoOverlay : function() {
     $('#info-overlay').fadeOut(500);
+    $('#controls').fadeIn(500);
+    $('#label-container').fadeIn(500);
+  },
+
+  openShareOverlay : function() {
+    app.stopAutoPlay();
+    $('#controls').fadeOut(500);
+    $('#label-container').fadeOut(500);
+    $('#share-overlay').fadeIn(500);
+  },
+
+  closeShareOverlay : function() {
+    $('#share-overlay').fadeOut(500);
     $('#controls').fadeIn(500);
     $('#label-container').fadeIn(500);
   },

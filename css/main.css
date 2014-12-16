@@ -1,7 +1,11 @@
 html, body {
   margin: 0;
   height: 100%;
-  overflow: hidden; }
+  overflow: hidden;
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+  color: white;
+}
 
 /* unvisited link */
 a:link {
@@ -10,17 +14,17 @@ a:link {
 
 /* visited link */
 a:visited {
-    color: #DD0;
+  color: #DD0;
 }
 
 /* mouse over link */
 a:hover {
-    color: #FF0;
+  color: #FF0;
 }
 
 /* selected link */
 a:active {
-    color: #FF0;
+  color: #FF0;
 }
 
 #container {
@@ -29,7 +33,8 @@ a:active {
   right: 0;
   top: 0;
   bottom: 0;
-  z-index: 1; }
+  z-index: 1;
+}
 
 #map {
   position: absolute;
@@ -40,6 +45,7 @@ a:active {
   cursor:pointer;
   background-color: transparent;
 }
+
 #map-buffer {
   position: absolute;
   top: 0; left: 0;
@@ -50,79 +56,69 @@ a:active {
 }
 
 @media (min-width: 800px) {
-#message-container {
-  display: none;
-  background-color: rgba(255, 0, 0, 0.75);
-  color: #fff;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index:300;
-  padding: 10px;
-  line-height:1.3em;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
-  font-size: 20px;
-}
+  #message-container {
+    display: none;
+    background-color: rgba(255, 0, 0, 0.75);
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index:300;
+    padding: 10px;
+    line-height:1.3em;
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 799px) {
-#message-container {
-  display: none;
-  background-color:rgba(255, 0, 0, 0.75);
-  color: #fff;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index:300;
-  padding: 10px;
-  line-height:1.3em;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
-  font-size: 16px;
-}
+  #message-container {
+    display: none;
+    background-color:rgba(255, 0, 0, 0.75);
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index:300;
+    padding: 10px;
+    line-height:1.3em;
+    font-size: 16px;
+  }
 }
 
 @media (min-width: 800px) {
-#label-container {
-  display: none;
-  z-index: 300;
-  background-color: rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 40px;
-  left: 40px;
-  min-height: 80px;
-  max-width: 55%;
-  padding: 10px;
-  line-height: 1.3em;
-  color: #fff;
-  text-shadow: 0px 0px 4px #000;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
-  font-size: 35px;
-  border-radius: 6px;
-}
+  #label-container {
+    display: none;
+    z-index: 300;
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    min-height: 80px;
+    max-width: 55%;
+    padding: 10px;
+    line-height: 1.3em;
+    text-shadow: 0px 0px 4px #000;
+    font-size: 35px;
+    border-radius: 6px;
+  }
 
-#location {
-  line-height:1.3em;
-  font-size: 20px;
-}
+  #location {
+    line-height:1.3em;
+    font-size: 20px;
+  }
 
-#controls {
-  display: none;
-  background-color: rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 40px;
-  right: 40px;
-  width: 48px;
-  height: 244px;
-  z-index:300;
-  color: #fff;
-  text-shadow: 0px 0px 4px #000;
-  border-radius: 6px;
-}
+  #controls {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 48px;
+    height: 244px;
+    z-index:300;
+    text-shadow: 0px 0px 4px #000;
+    border-radius: 6px;
+  }
 }
 
 @media (max-width: 799px) {
@@ -137,10 +133,7 @@ a:active {
     min-height: 32px;
     padding: 8px;
     line-height:1.3em;
-    color:#fff;
     text-shadow:0px 0px 4px #000;
-    font-family: 'Open Sans', sans-serif;
-    font-style: italic;
     font-size: 20px;
   }
 
@@ -158,7 +151,6 @@ a:active {
     height: 244px;
     width: 48px;
     z-index:300;
-    color:#fff;
     text-shadow:0px 0px 4px #000;
     border-radius: 6px;
   }
@@ -179,7 +171,7 @@ a:active {
 }
 
 
-#info-overlay {
+.overlay {
   overflow-y: auto;
   position: absolute;
   top:0;
@@ -189,182 +181,110 @@ a:active {
   z-index:1000;
   background:rgba(0,0,0,0.75);
   display:none;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
-}
-
-#welcome-overlay {
-  overflow-y: auto;
-  position: absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:1000;
-  background:rgba(0,0,0,0.75);
-  display:block;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
-}
-
-#search-overlay {
-  overflow-y: auto;
-  position: absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:1000;
-  background:rgba(0,0,0,0.75);
-  display:none;
-  font-family: 'Open Sans', sans-serif;
-  font-style: italic;
 }
 
 @media (min-width: 800px) {
-#info-overlay div {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 60%;
-  color: white;
-  text-shadow:0px 0px 4px #000;
-  font-size: 16px;
-}
+  .overlay-content {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 60%;
+    text-shadow:0px 0px 4px #000;
+    font-size: 16px;
+  }
 
-#info-overlay h2 {
-  font-size: 24px;
-  font-weight: bold;
-}
+  h1 {
+    font-size: 36px;
+    font-weight: bold;
+  }
 
-#welcome-overlay div {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 60%;
-  color: white;
-  text-shadow:0px 0px 4px #000;
-  font-size: 24px;
-}
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+  }
 
-#welcome-overlay h1 {
-  font-size: 36px;
-  font-weight: bold;
-}
+  #search-overlay input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 26px;
+  }
 
-#search-overlay-content {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 60%;
-  color: white;
-  text-shadow:0px 0px 4px #000;
-  font-size: 26px;
-}
+  #search-overlay-buttons {
+    width: 100%;
+    margin-top: 48px;
+  }
 
-#search-overlay input {
-  width: 100%;
-  min-height: 48px;
-  font-size: 26px;
-}
+  #search-overlay-search {
+    position: absolute;
+    left: 0px;
+    width: 45%;
+  }
 
-#search-overlay-buttons {
-  width: 100%;
-  margin-top: 48px;
-}
+  #search-overlay .close-button {
+    position: absolute;
+    right: 0px;
+    width: 45%;
+  }
 
-#search-overlay-search {
-  position: absolute;
-  left: 0px;
-  width: 45%;
-}
-
-#search-overlay-close {
-  position: absolute;
-  right: 0px;
-  width: 45%;
-}
-
-.my-btn {
-  display: inline-block;
-  padding: 10px 16px;
-  margin-bottom: 0;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 2;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-  border: 1px solid white;
-  color: white;
-  background-color: transparent;
-  border-radius: 6px;
-}
+  .my-btn {
+    display: inline-block;
+    padding: 10px 16px;
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 2;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 2px solid white;
+    color: white;
+    background-color: transparent;
+    border-radius: 6px;
+  }
 }
 
 @media (max-width: 799px) {
-  #info-overlay div {
+  .overlay-content {
     position: absolute;
     top: 2%;
     left: 2%;
     width: 96%;
-    color: white;
     text-shadow:0px 0px 4px #000;
     font-size: 10px;
   }
 
-  #info-overlay h2 {
+  h1 {
     font-size: 16px;
     font-weight: bold;
   }
-  
-  #welcome-overlay div {
+
+  h2 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  #search-overlay input {
+    width: 100%;
+    min-height: 20px;
+    font-size: 16px;
+  }
+
+  #search-overlay-buttons {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  #search-overlay-search {
     position: absolute;
-    top: 2%;
-    left: 2%;
-    width: 96%;
-    color: white;
-    text-shadow:0px 0px 4px #000;
-    font-size: 10px;
+    left: 0px;
+    width: 45%;
   }
 
-  #welcome-overlay h1 {
-    font-size: 16px;
-    font-weight: bold;
+  #search-overlay .close-button {
+    position: absolute;
+    right: 0px;
+    width: 45%;
   }
-
-#search-overlay-content {
-  position: absolute;
-  top: 2%;
-  left: 2%;
-  width: 96%;
-  color: white;
-  text-shadow:0px 0px 4px #000;
-  font-size: 16px;
-}
-
-#search-overlay input {
-  width: 100%;
-  min-height: 20px;
-  font-size: 16px;
-}
-
-#search-overlay-buttons {
-  width: 100%;
-  margin-top: 16px;
-}
-
-#search-overlay-search {
-  position: absolute;
-  left: 0px;
-  width: 45%;
-}
-
-#search-overlay-close {
-  position: absolute;
-  right: 0px;
-  width: 45%;
-}
 
   .my-btn {
     display: inline-block;
@@ -376,7 +296,7 @@ a:active {
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    border: 1px solid white;
+    border: 2px solid white;
     color: white;
     background-color: transparent;
     border-radius: 6px;

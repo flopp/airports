@@ -26,36 +26,11 @@
   <div id="container">
     <div id="map"></div>
   </div>
-
-  <div id="label-container">
-    <div id="label">Random Airports</div>
-    <div id="location"></div>
-  </div>
   
-  <div id="message-container">
-  </div>
   
-  <div id="controls">
-    <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
-    <div class="my-control" id="control-search" title="search airport"><i class="fa fa-2x fa-search"></i></div>
-    <div class="my-control" id="control-google-maps" title="open in google maps"><i class="fa fa-2x fa-globe"></i></div>
-    <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
-    <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
-  </div>
-
-  <div id="search-overlay" style="display: none">
-    <div id="search-overlay-content">
-      <p>Search for ICAO codes of airports:</p>
-      <input type="text" name="search-overlay-query" id="search-overlay-query" placeholder="Search term">
-      <div id="search-overlay-buttons">
-        <button class="my-btn" id="search-overlay-search">Search</button>
-        <button class="my-btn" id="search-overlay-close">Close</button>
-      </div>
-    </div>
-  </div>
-  
-  <div id="info-overlay">
-    <div>
+  <div id="info-overlay" class="overlay">
+    <div class="overlay-content">
+      <h1>Random Airports</h1>
       <p>
         This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
         Parts of the website are heavily inspired by David Schmidt's website <a href="http://chuchichechocha.com" target="_blank">chuchichechocha.com</a>.
@@ -63,9 +38,10 @@
 
       <h2>Usage</h2>
       <ul>
-        <li>Click on the <i class="fa fa-globe"></i> button in the control panel to open the current view in Google Maps.</li>
         <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
         <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every minute a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
+        <li>Click on the <i class="fa fa-search"></i> button in the control panel to search for a specific airport by ICAO code.</li>
+        <li>Click on the <i class="fa fa-share"></i> button in the control panel to open the current view in a variety of external services (e.g. Google Maps, FlightRadar24, etc.).</li>
         <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
       </ul>
 
@@ -87,26 +63,72 @@
         The source code of this app can be found at <a href="https://github.com/flopp/airports_map" target="_blank">Github</a>.
       </p>
 
-      <button class="my-btn">Close</button>
+      <button class="my-btn close-button">Close</button>
     </div>
   </div>
   
-  <div id="welcome-overlay">
-    <div>
+  
+  <div id="label-container">
+    <div id="label">Random Airports</div>
+    <div id="location"></div>
+  </div>
+
+  <div id="message-container"></div>
+
+
+  <div id="controls">
+    <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
+    <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
+    <div class="my-control" id="control-search" title="search airport"><i class="fa fa-2x fa-search"></i></div>
+    <div class="my-control" id="control-share" title="open share window"><i class="fa fa-2x fa-share"></i></div>
+    <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
+  </div>
+
+
+  <div id="search-overlay" style="display: none" class="overlay">
+    <div class="overlay-content">
+      <h1>Search for ICAO codes of airports:</h1>
+      <input type="text" name="search-overlay-query" id="search-overlay-query" placeholder="Search term">
+      <div id="search-overlay-buttons">
+        <button class="my-btn" id="search-overlay-search">Search</button>
+        <button class="my-btn close-button">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="welcome-overlay" class="overlay" style="display: block">
+    <div class="overlay-content">
       <h1>Random Airports</h1>
       <p>
         Enjoy the beauty and variety of the world's airports.
-        
+
         <ul class="fa-ul">
-          <li><i class="fa-li fa fa-play"></i> Toggle 'autoplay' mode -- automatically load a random airport every minute.</li>
           <li><i class="fa-li fa fa-refresh"></i> Manually jump to a random airport.</li>
+          <li><i class="fa-li fa fa-play"></i> Toggle 'autoplay' mode -- automatically load a random airport every minute.</li>
           <li><i class="fa-li fa fa-search"></i> Search for a specific airport by ICAO code.</li>
-          <li><i class="fa-li fa fa-globe"></i> Open the current view in Google Maps.</li>
+          <li><i class="fa-li fa fa-share"></i> Open the current view in an external service.</li>
         </ul>
       </p>
-      <button class="my-btn">Let's go!</button>
+      <button class="my-btn close-button">Let's go!</button>
     </div>
   </div>
-</body>
 
+
+  <div id="share-overlay" class="overlay">
+    <div class="overlay-content">
+      <h1>Open current view/airport in an external service:</h1>
+      <p>
+        <button class="my-btn" id="open-google-maps">Google Maps</button>
+        <button class="my-btn" id="open-ourairports">OurAirports.com</button>
+        <button class="my-btn" id="open-flightradar24">FlightRadar24</button>
+      </p>
+      <br />
+      <p>
+        <button class="my-btn close-button">Close</button>
+      </p>
+    </div>
+  </div>
+
+</body>
 </html>
