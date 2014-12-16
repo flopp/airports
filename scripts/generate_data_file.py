@@ -109,6 +109,12 @@ class Airport:
       latlng2 = self.__bounds.get_max()
       return latlng1 != latlng2
     
+    def non_excessive_bounds(self):
+      latlng1 = self.__bounds.get_min()
+      latlng2 = self.__bounds.get_max()
+      d = max(abs(latlng1[0]-latlng2[0]), abs(latlng1[1]-latlng2[1]))
+      return d < 0.5
+      
     def to_csv_string(self):
         iata = self.__iata_code
         if iata == self.__ident:
@@ -190,7 +196,7 @@ class AirportsTable:
         cur = db.cursor()
         count = 0
         for airport in self.__items:
-            if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()):
+            if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()) and (airport.non_excessive_bounds()):
                 count = count + 1
                 values = airport.to_sql_string()
                 cur.execute("INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2) VALUES ({0});"
