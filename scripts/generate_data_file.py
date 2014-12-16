@@ -148,8 +148,9 @@ class Airport:
 
     def compute_bounds(self, runways):
         for runway in runways:
-            self.__bounds.extend(runway.le_latlng())
-            self.__bounds.extend(runway.he_latlng())
+            if not runway.is_closed() and runway.has_hard_surface():
+                self.__bounds.extend(runway.le_latlng())
+                self.__bounds.extend(runway.he_latlng())
 
 
 class AirportsTable:
@@ -252,7 +253,7 @@ class Runway:
             self.__le_latlng = (float(self.__le_latitude_deg), float(self.__le_longitude_deg))
         if self.__he_latitude_deg != "" and self.__he_longitude_deg != "":
             self.__he_latlng = (float(self.__he_latitude_deg), float(self.__he_longitude_deg))
-
+        
     def airport_id(self):
         return self.__airport_ident
     
@@ -261,6 +262,13 @@ class Runway:
     
     def he_latlng(self):
         return self.__he_latlng
+    
+    def is_closed(self):
+        return self.__closed == '1'
+    
+    def has_hard_surface(self):
+        import re
+        return re.search('con|asp|tar', self.__surface, re.IGNORECASE) != None
 
 
 class RunwaysTable:
