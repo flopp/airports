@@ -150,6 +150,7 @@ var app = {
   },
   
   showSearch : function() {
+    app.track("control", "search");
     app.stopAutoPlay();
     $('#controls').fadeOut(500);
     $('#label-container').fadeOut(500);
@@ -166,13 +167,14 @@ var app = {
   
   performSearch : function() {
     app.query_id = app.sanitize_query_id($('#search-overlay-query').val());
+    app.track('search', app.query_id);
     app.loadRandomAirport();
     app.closeSearch();
   },
   
   sanitize_query_id : function(id) {
     if (id) {
-      app.track('init', 'query', 'id', id);
+      app.track('init', id);
       return id.toUpperCase().replace(/[^A-Za-z0-9-]/g, '');
     } else {
       return '';
@@ -271,21 +273,21 @@ var app = {
   
   openGoogleMaps : function() {
     if (!app.current) return;
-    app.track("control", "google-maps", "airport", app.current.get_label());
+    app.track("google-maps", app.current.get_label());
     var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
     window.open(url, '_blank');
   },
   
   openOurAirports : function() {
     if (!app.current) return;
-    app.track("control", "ourairports", "airport", app.current.get_label());
+    app.track("ourairports", app.current.get_label());
     var url = "http://ourairports.com/airports/" + app.current.get_code();
     window.open(url, '_blank');
   },
   
   openFlightRadar24 : function() {
     if (!app.current) return;
-    app.track("control", "flightradar24", "airport", app.current.get_label());
+    app.track("flightradar24", app.current.get_label());
     var url = "http://www.flightradar24.com/" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "/" + Math.min(15, app.map.getZoom());
     window.open(url, '_blank');
   },
@@ -369,7 +371,7 @@ var app = {
       if ($.inArray(app.query_id, app.airport_ids) >= 0) {
         id = app.query_id;
       } else {
-        app.track('error', 'Requested airport (' + app.query_id + ') cannot be found. Loading random airport.');
+        app.track('error', 'airport not found ' + app.query_id);
         app.displayMessage('Requested airport (' + app.query_id + ') cannot be found. Loading random airport.');
       }
       app.query_id = '';
@@ -402,7 +404,7 @@ var app = {
         app.max_zoom = -1;
         app.fitMap();
       } else {
-        app.track('error', 'Error loading requested airport (' + id + ').');
+        app.track('error', 'airport not found' + id);
         app.displayMessage('Error loading requested airport (' + id + ').');
         app.current = null;
         app.onFinishLoading();
