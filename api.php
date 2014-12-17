@@ -22,7 +22,8 @@ if (!empty($_GET))
         $mode = "search"; 
         $query = $_GET['search'];
         $query = strtoupper($query);
-        $query = preg_replace("/[^[:alnum:]-]/", '', $query);
+        $query = preg_replace("/%20/", ' ', $query);
+        $query = preg_replace("/[^[:alnum:]- ]/", '', $query);
     }
 }
 

@@ -165,18 +165,22 @@ var app = {
     $('#search-overlay').fadeOut(500);
   },
   
+  sanitize_query : function(query) {
+    return query.trim().replace(/\s+/g, ' ').toUpperCase().replace(/[^A-Za-z0-9- ]/g, '');
+  },
+
   performSearch : function() {
-    var query = app.sanitize_query_id($('#search-overlay-query').val());
+    var query = app.sanitize_query($('#search-overlay-query').val());
     app.track('search', query);
     app.closeSearch();
     
-    $.get("api.php?search=" + query, function(data) {
+    $.get("api.php?search=" + query.replace(/ /g, '%20'), function(data) {
       var json = $.parseJSON(data);
       if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
         app.query_id = json.airport.id;
         app.loadRandomAirport();
       } else {
-        app.track('error', 'searched airport not found' + query);
+        app.track('error', 'searched airport not found: ' + query);
         app.displayMessage('Cannot find airport matching "' + query + '".');
       }
     });
@@ -184,7 +188,6 @@ var app = {
   
   sanitize_query_id : function(id) {
     if (id) {
-      app.track('init', id);
       return id.toUpperCase().replace(/[^A-Za-z0-9-]/g, '');
     } else {
       return '';
