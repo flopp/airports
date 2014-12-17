@@ -203,6 +203,11 @@ class AirportsTable:
                             .format(values))
         db.commit()
         print("airports {0}".format(count))
+    
+    def check(self):
+        for airport in self.__items:
+            if not airport.non_excessive_bounds():
+                print("{0}: bad runway coordinates".format(airport.id()))
 
 
 class Runway:
@@ -316,5 +321,6 @@ if __name__ == "__main__":
     airports = AirportsTable("airports.csv")
     runways = RunwaysTable("runways.csv")
     airports.compute_bounds(runways.to_dict())
+    airports.check()
     #airports.print_csv("data.csv")
     airports.to_sql("airports.sqlite")

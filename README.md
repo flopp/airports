@@ -9,7 +9,7 @@ Features
 --------
 * Automatic fitting of he satellite view to the displayed airport
 * *Autoplay mode* which automatically advances to a new airport every minute
-* *Search* function for ICAO codes
+* *Search* function for ICAO codes, IATA codes, airport names and location names
 
 Technology
 ----------

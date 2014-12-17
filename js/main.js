@@ -166,10 +166,20 @@ var app = {
   },
   
   performSearch : function() {
-    app.query_id = app.sanitize_query_id($('#search-overlay-query').val());
-    app.track('search', app.query_id);
-    app.loadRandomAirport();
+    var query = app.sanitize_query_id($('#search-overlay-query').val());
+    app.track('search', query);
     app.closeSearch();
+    
+    $.get("api.php?search=" + query, function(data) {
+      var json = $.parseJSON(data);
+      if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
+        app.query_id = json.airport.id;
+        app.loadRandomAirport();
+      } else {
+        app.track('error', 'searched airport not found' + query);
+        app.displayMessage('Cannot find airport matching "' + query + '".');
+      }
+    });
   },
   
   sanitize_query_id : function(id) {
