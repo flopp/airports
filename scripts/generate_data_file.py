@@ -56,6 +56,7 @@ class Airport:
         self.__home_link = None
         self.__wikipedia_link = None
         self.__keywords = None
+        self.__runways = 0
 
         self.__latlng = None
         self.__bounds = None
@@ -68,8 +69,8 @@ class Airport:
         self.__ident = array[1]
         self.__type = array[2]
         self.__name = array[3]
-        self.__latitude_deg = array[4]
-        self.__longitude_deg = array[5]
+        self.__latitude_deg = array[4].replace(',', '.')
+        self.__longitude_deg = array[5].replace(',', '.')
         self.__elevation_ft = array[6]
         self.__continent = array[7]
         self.__iso_country = array[8]
@@ -82,6 +83,7 @@ class Airport:
         self.__home_link = array[15]
         self.__wikipedia_link = array[16]
         self.__keywords = array[17]
+        self.__runways = 0
 
         self.__latlng = (float(self.__latitude_deg), float(self.__longitude_deg))
         self.__bounds = Bounds()
@@ -114,26 +116,6 @@ class Airport:
       latlng2 = self.__bounds.get_max()
       d = max(abs(latlng1[0]-latlng2[0]), abs(latlng1[1]-latlng2[1]))
       return d < 0.5
-      
-    def to_csv_string(self):
-        iata = self.__iata_code
-        if iata == self.__ident:
-            iata = ""
-
-        latlng1 = self.__bounds.get_min()
-        latlng2 = self.__bounds.get_max()
-        if latlng1 == latlng2:
-            latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
-            latlng2 = ('', '')
-        else:
-            latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
-            latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
-
-        return "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}" \
-            .format(self.__ident, iata, self.__name, self.shorten_type(self.__type),
-                    latlng1[0], latlng1[1],
-                    latlng2[0], latlng2[1],
-                    self.__iso_country, self.__municipality)
 
     def to_sql_string(self):
         iata = self.__iata_code
@@ -145,16 +127,19 @@ class Airport:
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
 
-        return '"{0}","{1}","{2}","{3}","{4}","{5}",{6},{7},{8},{9}' \
+        return '"{0}","{1}","{2}","{3}","{4}","{5}",{6},{7},{8},{9},{10}' \
             .format(self.__ident, iata, quote(self.__name), self.shorten_type(self.__type),
                     self.__iso_country, quote(self.__municipality),
                     latlng1[0], latlng1[1],
-                    latlng2[0], latlng2[1])
+                    latlng2[0], latlng2[1],
+                    self.__runways)
 
 
     def compute_bounds(self, runways):
+        self.__runways = 0
         for runway in runways:
-            if not runway.is_closed() and runway.has_hard_surface():
+            if (not runway.is_closed()) and runway.has_hard_surface() and runway.has_coordinates():
+                self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
 
@@ -178,19 +163,13 @@ class AirportsTable:
         for airport in self.__items:
             if airport.id() in runways_dict:
                 airport.compute_bounds(runways_dict[airport.id()])
-
-    def print_csv(self, file_name):
-        with open(file_name, 'w') as csv_file:
-            for airport in self.__items:
-                if airport.type() in ["large_airport", "medium_airport"]:
-                    csv_file.write(airport.to_csv_string() + '\n')
     
     def to_sql(self, file_name):
         import sqlite3
         db = sqlite3.connect(file_name)
 
         cur = db.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6));")
+        cur.execute("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
         db.commit()
 
         cur = db.cursor()
@@ -199,7 +178,7 @@ class AirportsTable:
             if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()) and (airport.non_excessive_bounds()):
                 count = count + 1
                 values = airport.to_sql_string()
-                cur.execute("INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2) VALUES ({0});"
+                cur.execute("INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
                             .format(values))
         db.commit()
         print("airports {0}".format(count))
@@ -248,14 +227,14 @@ class Runway:
         self.__lighted = array[6]
         self.__closed = array[7]
         self.__le_ident = array[8]
-        self.__le_latitude_deg = array[9]
-        self.__le_longitude_deg = array[10]
+        self.__le_latitude_deg = array[9].replace(',', '.')
+        self.__le_longitude_deg = array[10].replace(',', '.')
         self.__le_elevation_ft = array[11]
         self.__le_heading_degT = array[12]
         self.__le_displaced_threshold_ft = array[14]
         self.__he_ident = array[14]
-        self.__he_latitude_deg = array[15]
-        self.__he_longitude_deg = array[16]
+        self.__he_latitude_deg = array[15].replace(',', '.')
+        self.__he_longitude_deg = array[16].replace(',', '.')
         self.__he_elevation_ft = array[17]
         self.__he_heading_degT = array[18]
         self.__he_displaced_threshold_ft = array[19]
@@ -277,6 +256,9 @@ class Runway:
     def is_closed(self):
         return self.__closed == '1'
     
+    def has_coordinates(self):
+        return self.__le_latlng != None or self.__he_latlng != None 
+        
     def has_hard_surface(self):
         import re
         return re.search('con|asp|tar', self.__surface, re.IGNORECASE) != None
@@ -322,5 +304,4 @@ if __name__ == "__main__":
     runways = RunwaysTable("runways.csv")
     airports.compute_bounds(runways.to_dict())
     airports.check()
-    #airports.print_csv("data.csv")
     airports.to_sql("airports.sqlite")

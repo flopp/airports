@@ -7,6 +7,7 @@ $db_file = "data/airports.sqlite";
 $messages = array();
 $mode = "list";
 $query = "";
+$runways = 0;
 
 if (!empty($_GET))
 {
@@ -25,6 +26,14 @@ if (!empty($_GET))
         $query = preg_replace("/%20/", ' ', $query);
         $query = preg_replace("/[^[:alnum:]- ]/", '', $query);
     }
+    else if (isset($_GET['random']))
+    {
+      $mode = "random";
+      if (isset($_GET['runways']) && is_numeric($_GET['runways']))
+      {
+        $runways = intval($_GET['runways']);
+      }
+    } 
 }
 
 class AirportsDB extends PDO 
@@ -49,7 +58,7 @@ class AirportsDB extends PDO
     
     public function get_airport($id)
     {
-      $result = $this->query('SELECT * FROM airports WHERE id IS "' . $id .'" COLLATE NOCASE;');
+      $result = $this->query('SELECT * FROM airports WHERE id IS "' . $id .'" COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
@@ -65,34 +74,45 @@ class AirportsDB extends PDO
         return array();  
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE id IS "' . $query .'"  COLLATE NOCASE;');
+      $result = $this->query('SELECT * FROM airports WHERE id IS "' . $query .'"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE iata IS "' . $query .'"  COLLATE NOCASE;');
+      $result = $this->query('SELECT * FROM airports WHERE iata IS "' . $query .'"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE name LIKE "%' . $query .'%"  COLLATE NOCASE;');
+      $result = $this->query('SELECT * FROM airports WHERE name LIKE "%' . $query .'%"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE city LIKE "%' . $query .'%"  COLLATE NOCASE;');
+      $result = $this->query('SELECT * FROM airports WHERE city LIKE "%' . $query .'%"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
+      return array();
+    }
+    
+    public function get_random_airport($runways)
+    {
+      $result = $this->query('SELECT * FROM airports WHERE runways >= ' . $runways . ' ORDER BY RANDOM() LIMIT 1;');
+      foreach ($result as $m) 
+      {
+          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
+                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+      }
       return array();
     }
 }
@@ -123,6 +143,24 @@ else if ($mode == "search")
   {
       $db = new AirportsDB('sqlite:' . $db_file);
       $airport = $db->search_airport($query);
+      $db = null;
+  }
+  catch (PDOException $e) 
+  {
+      array_push($messages, "Error: " . $e->getMessage());
+  }
+  
+  $arr = array('messages' => $messages, 'airport' => $airport);
+  echo json_encode($arr);
+}
+else if ($mode == "random")
+{
+  $airport = array();
+  
+  try 
+  {
+      $db = new AirportsDB('sqlite:' . $db_file);
+      $airport = $db->get_random_airport($runways);
       $db = null;
   }
   catch (PDOException $e) 

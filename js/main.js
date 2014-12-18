@@ -29,14 +29,9 @@ var app = {
       backgroundColor: '#000000'};
     app.map = new google.maps.Map($('#map')[0],opt);
     app.max_zoom_service = new google.maps.MaxZoomService();
-    
-    app.airport_ids = [];
-    $.get("api.php?list", function(data) {
-      var json = $.parseJSON(data);
-      app.airport_ids = json.ids;
-      app.loadRandomAirport();
-    });
 
+    app.loadRandomAirport();
+    
     // setup event handlers
     google.maps.event.addListener(app.map, 'click', function(event) {
       app.track("map", "click");
@@ -378,51 +373,58 @@ var app = {
     }
     app.loading = true;
     app.onStartLoading();
-    
-    var id = '';
-    if (app.query_id != '') {
-      if ($.inArray(app.query_id, app.airport_ids) >= 0) {
-        id = app.query_id;
-      } else {
-        app.track('error', 'airport not found ' + app.query_id);
-        app.displayMessage('Requested airport (' + app.query_id + ') cannot be found. Loading random airport.');
-      }
-      app.query_id = '';
-    }
-    if (id == '') {
-      if (app.airport_ids.length > 0) {
-        var index =  Math.floor(Math.random() * app.airport_ids.length);
-        id = app.airport_ids[index];
-      }
-    }
-    if (id == '') {
-      id = 'EDDF';
-    }
-    
-    console.log("loading " + id + "...");
-    
-    $.get("api.php?id=" + id, function(data) {
-      var json = $.parseJSON(data);
-      if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
-        app.current = new Airport;
-        app.current.load_from_json(json.airport);
-      
-        google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
-        setTimeout(function(){
-          $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
-          }, 2000);
-        });
-        setTimeout(function(){ app.onFinishLoading(); }, 3000);
 
-        app.max_zoom = -1;
-        app.fitMap();
-      } else {
-        app.track('error', 'airport not found' + id);
-        app.displayMessage('Error loading requested airport (' + id + ').');
-        app.current = null;
-        app.onFinishLoading();
-      }
-    });
+    if (app.query_id != "") {
+      var id = app.query_id;
+      console.log("loading " + id + "...");
+      app.query_id = "";
+      $.get("api.php?id=" + id, function(data) {
+        var json = $.parseJSON(data);
+        if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
+          app.current = new Airport;
+          app.current.load_from_json(json.airport);
+        
+          google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
+          setTimeout(function(){
+            $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
+            }, 2000);
+          });
+          setTimeout(function(){ app.onFinishLoading(); }, 3000);
+  
+          app.max_zoom = -1;
+          app.fitMap();
+        } else {
+          app.track('error', 'airport not found' + id);
+          app.displayMessage('Error loading requested airport (' + id + ').');
+          app.current = null;
+          app.onFinishLoading();
+        }
+      });
+    } else {
+      console.log("loading random airport...");
+      $.get("api.php?random", function(data) {
+        var json = $.parseJSON(data);
+        if (typeof(json.airport) !== 'undefined' && typeof(json.airport.id) !== 'undefined') {
+          app.current = new Airport;
+          app.current.load_from_json(json.airport);
+        
+          google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
+          setTimeout(function(){
+            $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
+            }, 2000);
+          });
+          setTimeout(function(){ app.onFinishLoading(); }, 3000);
+  
+          app.max_zoom = -1;
+          app.fitMap();
+        } else {
+          app.track('error', 'cannot load random airport');
+          app.displayMessage('Error loading random airport.');
+          app.current = null;
+          app.onFinishLoading();
+        }
+      });
+    }
   },
 
   track : function(category,action,label,value) {
