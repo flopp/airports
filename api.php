@@ -88,14 +88,14 @@ class AirportsDB extends PDO
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE name LIKE "%' . $query .'%"  COLLATE NOCASE LIMIT 1;');
+      $result = $this->query('SELECT * FROM airports WHERE name LIKE "%' . $query .'%"  COLLATE NOCASE ORDER BY runways DESC LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
                        "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
       }
       
-      $result = $this->query('SELECT * FROM airports WHERE city LIKE "%' . $query .'%"  COLLATE NOCASE LIMIT 1;');
+      $result = $this->query('SELECT * FROM airports WHERE city LIKE "%' . $query .'%"  COLLATE NOCASE ORDER BY runways DESC LIMIT 1;');
       foreach ($result as $m) 
       {
           return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
