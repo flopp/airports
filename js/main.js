@@ -172,6 +172,7 @@ var app = {
   performSearch : function() {
     var query = app.sanitize_query($('#search-overlay-query').val());
     app.track('search', query);
+    app.trackSearch(query);
     app.closeSearch();
     
     $.get("api.php?search=" + query.replace(/ /g, '%20'), function(data) {
@@ -427,6 +428,10 @@ var app = {
 
   track : function(category,action,label,value) {
     if(_gaq) _gaq.push(['_trackEvent', category, action, label, value]);
+  },
+  
+  trackSearch : function(query) {
+    if (_gaq) _gaq.push(['_trackPageview','?query=' + query]);
   }
 };
 
