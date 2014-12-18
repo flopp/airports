@@ -66,11 +66,11 @@ var app = {
       });
     
     $('#welcome-overlay').click(function() {
-      app.track('welcome-overlay', 'background', 'click');
+      app.track('welcome-overlay', 'background-click');
       app.closeWelcomeOverlay();
       });
     $('#welcome-overlay .close-button').click(function(){
-      app.track('welcome-overlay', 'close-button', 'click');
+      app.track('welcome-overlay', 'close-button-click');
       app.closeWelcomeOverlay();
     });
     
@@ -78,20 +78,20 @@ var app = {
       // don't close info overlay when clicking on a link
       if (event.target && event.target.tagName == 'A') {
         event.stopPropagation();
-        app.track('info-overlay', 'link', 'href', event.target.href);
+        app.track('info-overlay', event.target.href);
         return;
       }
-      app.track('info-overlay', 'background', 'click');
+      app.track('info-overlay', 'background-click');
       app.closeInfoOverlay();
       });
     $('#info-overlay .close-button').click(function(){
       event.stopPropagation();
-      app.track('info-overlay', 'close-button', 'click');
+      app.track('info-overlay', 'close-button-click');
       app.closeInfoOverlay();
     });
     
     $('#message-container').click(function(){
-      app.track('message-container', 'background', 'click');
+      app.track('message-container', 'background-click');
       app.closeMessage();
     });
     
@@ -171,7 +171,6 @@ var app = {
 
   performSearch : function() {
     var query = app.sanitize_query($('#search-overlay-query').val());
-    app.track('search', query);
     app.trackSearch(query);
     app.closeSearch();
     
@@ -431,7 +430,7 @@ var app = {
   },
   
   trackSearch : function(query) {
-    if (_gaq) _gaq.push(['_trackPageview','?query=' + query]);
+    if (_gaq) _gaq.push(['_trackEvent','search', query]);
   }
 };
 
