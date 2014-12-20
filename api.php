@@ -1,30 +1,44 @@
 <?php
 
-error_reporting(~0);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 
 $db_file = "data/airports.sqlite";
+$votes_db_file = "data/votes.sqlite";
 $messages = array();
 $mode = "list";
 $query = "";
 $runways = 0;
+
+function sanitize_query_id($s)
+{
+  $sanitized = strtoupper($s);
+  $sanitized = preg_replace("/[^[:alnum:]-]/", '', $sanitized);
+  return $sanitized;
+}
+
+function sanitize_query_string($s)
+{
+  $sanitized = strtoupper($s);
+  $sanitized = preg_replace("/%20/", ' ', $sanitized);
+  $sanitized = preg_replace("/\s+/", ' ', $sanitized);
+  $sanitized = preg_replace("/[^[:alnum:]- ]/", '', $sanitized);
+  return $sanitized;
+}
+
 
 if (!empty($_GET))
 {
     if (isset($_GET['id']))
     {
         $mode = "id"; 
-        $query = $_GET['id'];
-        $query = strtoupper($query);
-        $query = preg_replace("/[^[:alnum:]-]/", '', $query);
+        $query = sanitize_query_id($_GET['id']);
     }
     else if (isset($_GET['search']))
     {
         $mode = "search"; 
-        $query = $_GET['search'];
-        $query = strtoupper($query);
-        $query = preg_replace("/%20/", ' ', $query);
-        $query = preg_replace("/[^[:alnum:]- ]/", '', $query);
+        $query = sanitize_query_string($_GET['search']);
     }
     else if (isset($_GET['random']))
     {
@@ -33,7 +47,17 @@ if (!empty($_GET))
       {
         $runways = intval($_GET['runways']);
       }
-    } 
+    }
+    else if (isset($_GET['vote']))
+    {
+      $mode = "vote";
+      $query = sanitize_query_id($_GET['vote']);
+    }
+    else if (isset($_GET['votes'])) 
+    {
+      $mode = "votes";
+      $query = sanitize_query_id($_GET['votes']);
+    }
 }
 
 class AirportsDB extends PDO 
@@ -42,7 +66,7 @@ class AirportsDB extends PDO
     {
          parent :: __construct($dsn, $username, $password, $driver_options);
          $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6),  lat2 DECIMAL(9,6), lon2 DECIMAL(9,6), PRIMARY KEY (id));");
+         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6), lat2 DECIMAL(9,6), lon2 DECIMAL(9,6));");
     }
     
     public function get_ids()
@@ -117,6 +141,65 @@ class AirportsDB extends PDO
     }
 }
 
+
+class VotesDB extends PDO 
+{
+    public function __construct($dsn, $username = null, $password = null, array $driver_options = null) 
+    {
+         parent :: __construct($dsn, $username, $password, $driver_options);
+         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+         $this->exec("CREATE TABLE IF NOT EXISTS votes (id TEXT PRIMARY KEY, votes INTEGER);");
+    }
+    
+    public function exists($id)
+    {
+        $sql = 'SELECT * FROM votes WHERE id IS "' . $id . '" LIMIT 1;';
+        //echo $sql;
+        $result = $this->query($sql);
+        foreach ($result as $m) 
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public function votes($id)
+    {
+        $sql = 'SELECT * FROM votes;';
+        if ($id != "")
+        {
+          $sql = 'SELECT * FROM votes WHERE id IS "' . $id . '" COLLATE NOCASE LIMIT 1;';
+        }
+        //echo $sql;
+        $a = array();
+        $result = $this->query($sql);
+        foreach ($result as $m) 
+        {
+            array_push($a, array("id" => $m['id'], "votes" => $m['votes']));
+        }
+        return $a;
+    }
+    
+    public function vote($id)
+    {
+      if ($this->exists($id)) 
+      {
+        $sql = 'UPDATE votes SET votes = (votes + 1) WHERE id IS "' . $id . '" COLLATE NOCASE;';
+        //echo $sql;
+        $this->exec($sql);
+      }
+      else
+      {
+        $sql = 'INSERT INTO votes (id, votes) VALUES ("' . $id . '", 1);';
+        //echo $sql;
+        $this->exec($sql);
+      }
+      
+      return $this->votes($id);
+    }
+}
+
+
 if ($mode == "id")
 {
   $airport = array();
@@ -169,6 +252,49 @@ else if ($mode == "random")
   }
   
   $arr = array('messages' => $messages, 'airport' => $airport);
+  echo json_encode($arr);
+}
+else if ($mode == "vote") 
+{
+  $votes = array();
+  
+  if ($query != "") 
+  {
+    try 
+    {
+      $db = new VotesDB('sqlite:' . $votes_db_file);
+      $votes = $db->vote($query);
+      $db = null;
+    }
+    catch (PDOException $e) 
+    {
+        array_push($messages, "Error: " . $e->getMessage());
+    }
+  }
+  else
+  {
+    array_push($messages, "Error: no airport id given");
+  }
+  
+  $arr = array('messages' => $messages, 'votes' => $votes);
+  echo json_encode($arr);
+}
+else if ($mode == "votes") 
+{
+  $votes = array();
+  
+  try 
+  {
+    $db = new VotesDB('sqlite:' . $votes_db_file);
+    $votes = $db->votes($query);
+    $db = null;
+  } 
+  catch (PDOException $e) 
+  {
+      array_push($messages, "Error: " . $e->getMessage());
+  }
+  
+  $arr = array('messages' => $messages, 'votes' => $votes);
   echo json_encode($arr);
 }
 else
