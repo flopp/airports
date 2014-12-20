@@ -32,7 +32,7 @@
   </div>
   
   
-  <div id="info-overlay" class="overlay">
+  <div id="about-overlay" class="overlay">
     <div class="overlay-content">
       <h1>Random Airports</h1>
       <p>
@@ -84,8 +84,8 @@
     <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
     <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
     <div class="my-control" id="control-search" title="search airport"><i class="fa fa-2x fa-search"></i></div>
-    <div class="my-control" id="control-share" title="open share window"><i class="fa fa-2x fa-share"></i></div>
-    <div class="my-control" id="control-info" title="show info"><i class="fa fa-2x fa-info-circle"></i></div>
+    <div class="my-control" id="control-info" title="open airport info window"><i class="fa fa-2x fa-info-circle"></i></div>
+    <div class="my-control" id="control-about" title="open about window"><i class="fa fa-2x fa-question-circle"></i></div>
   </div>
 
 
@@ -112,7 +112,7 @@
           <li><i class="fa-li fa fa-refresh"></i> (or just click the screen): Manually jump to a random airport.</li>
           <li><i class="fa-li fa fa-play"></i>: Toggle 'autoplay' mode - automatically load a random airport every minute.</li>
           <li><i class="fa-li fa fa-search"></i>: Search for a specific airport.</li>
-          <li><i class="fa-li fa fa-share"></i>: Open the current view in an external service.</li>
+          <li><i class="fa-li fa fa-info-circle"></i>: Show infos about the current airport.</li>
         </ul>
       </p>
       <button class="my-btn close-button">Let's go!</button>
@@ -120,9 +120,13 @@
   </div>
 
 
-  <div id="share-overlay" class="overlay">
+  <div id="info-overlay" class="overlay">
     <div class="overlay-content">
-      <h1>Open current view/airport in an external service:</h1>
+      <h1 id="info-label"></h1>
+      <h2 id="info-location"></h2>
+      <p><img id="info-minimap"/></p>
+      
+      <h2>Open current view/airport in an external service:</h2>
       <p>
         <button class="my-btn" id="open-google-maps">Google Maps</button>
         <button class="my-btn" id="open-ourairports">OurAirports.com</button>

@@ -40,8 +40,8 @@ cp deploy/ext/history.js/scripts/bundled/html4+html5/jquery.history.js deploy/js
 
 if [ -f config.txt ] ; then
   source config.txt
-  sed -i "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" deploy/index.html 
-  sed -i "s/GOOGLE_ANALYTICS_ACCOUNT/${GOOGLE_ANALYTICS_ACCOUNT}/g" deploy/js/main.js
+  sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" deploy/index.html 
+  sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" -e "s/GOOGLE_ANALYTICS_ACCOUNT/${GOOGLE_ANALYTICS_ACCOUNT}/g" deploy/js/main.js
 fi
 
 cd deploy

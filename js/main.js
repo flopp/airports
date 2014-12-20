@@ -21,14 +21,17 @@ var app = {
     app.hide_message_timer = null;
     
     var opt = {
-      //center: new google.maps.LatLng(50.037643, 8.562409), zoom: 15,
       mapTypeId: google.maps.MapTypeId.SATELLITE,
       disableDefaultUI: true, mapTypeControl: false, navigationControl: false, disableDoubleClickZoom: false,
       draggable: false, scrollwheel: false, streetViewControl: false,
       backgroundColor: '#000000'};
     app.map = new google.maps.Map($('#map')[0],opt);
     app.max_zoom_service = new google.maps.MaxZoomService();
-
+    
+    // close welcome page if an airport is specified in the url
+    if (History.getHash() != "") {
+      app.closeWelcomeOverlay(true);
+    }
     app.loadAirport(History.getHash());
     
     // setup event handlers
@@ -42,13 +45,13 @@ var app = {
       app.fitMap();
     });
 
+    $('#control-about').click(function() {
+      app.track("control", "about");
+      app.openAboutOverlay();
+      });
     $('#control-info').click(function() {
       app.track("control", "info");
       app.openInfoOverlay();
-      });
-    $('#control-share').click(function() {
-      app.track("control", "share");
-      app.openShareOverlay();
       });
     $('#control-random').click(function() {
       app.track("control", "random");
@@ -61,27 +64,27 @@ var app = {
     
     $('#welcome-overlay').click(function() {
       app.track('welcome-overlay', 'background-click');
-      app.closeWelcomeOverlay();
+      app.closeWelcomeOverlay(false);
       });
     $('#welcome-overlay .close-button').click(function(){
       app.track('welcome-overlay', 'close-button-click');
-      app.closeWelcomeOverlay();
+      app.closeWelcomeOverlay(false);
     });
     
-    $('#info-overlay').click(function() {
+    $('#about-overlay').click(function() {
       // don't close info overlay when clicking on a link
       if (event.target && event.target.tagName == 'A') {
         event.stopPropagation();
-        app.track('info-overlay', event.target.href);
+        app.track('about-overlay', event.target.href);
         return;
       }
-      app.track('info-overlay', 'background-click');
-      app.closeInfoOverlay();
+      app.track('about-overlay', 'background-click');
+      app.closeAboutOverlay();
       });
-    $('#info-overlay .close-button').click(function(){
+    $('#about-overlay .close-button').click(function(){
       event.stopPropagation();
-      app.track('info-overlay', 'close-button-click');
-      app.closeInfoOverlay();
+      app.track('about-overlay', 'close-button-click');
+      app.closeAboutOverlay();
     });
     
     $('#message-container').click(function(){
@@ -89,29 +92,33 @@ var app = {
       app.closeMessage();
     });
     
-    $('#share-overlay').click(function(){
-      app.closeShareOverlay();
+    $('#info-overlay').click(function(){
+      app.closeInfoOverlay();
     });
-    $('#share-overlay .close-button').click(function(){
-      app.closeShareOverlay();
+    $('#info-overlay .close-button').click(function(){
+      app.closeInfoOverlay();
     });
     
-    $('#share-overlay #open-google-maps').click(function(){
+    $('#info-overlay #open-google-maps').click(function(){
+      event.stopPropagation();
       app.openGoogleMaps();
-      app.closeShareOverlay();
     });
-    $('#share-overlay #open-ourairports').click(function(){
+    $('#info-overlay #info-minimap').click(function(){
+      event.stopPropagation();
+      app.openGoogleMaps();
+    });
+    $('#info-overlay #open-ourairports').click(function(){
+      event.stopPropagation();
       app.openOurAirports();
-      app.closeShareOverlay();
     });
-    $('#share-overlay #open-flightradar24').click(function(){
+    $('#info-overlay #open-flightradar24').click(function(){
+      event.stopPropagation();
       app.openFlightRadar24();
-      app.closeShareOverlay();
     });
     
     $('#control-search').click(function() {
       app.showSearch();
-      });
+    });
     $('#search-overlay-search').click(function(){
       app.performSearch();
     });
@@ -290,13 +297,36 @@ var app = {
     window.open(url, '_blank');
   },
 
-  closeWelcomeOverlay : function() {
-    $('#welcome-overlay').fadeOut(500);
+  closeWelcomeOverlay : function(instant) {
+    if (instant === true) {
+      $('#welcome-overlay').hide();
+      $('#controls').show();
+      $('#label-container').show();
+    } else {
+      $('#welcome-overlay').fadeOut(500);
+      $('#controls').fadeIn(500);
+      $('#label-container').fadeIn(500);
+    }
+  },
+  
+  openAboutOverlay : function() {
+    $('#controls').fadeOut(500);
+    $('#label-container').fadeOut(500);
+    $('#about-overlay').fadeIn(500);
+  },
+
+  closeAboutOverlay : function() {
+    $('#about-overlay').fadeOut(500);
     $('#controls').fadeIn(500);
     $('#label-container').fadeIn(500);
   },
-  
+
   openInfoOverlay : function() {
+    app.stopAutoPlay();
+    $('#info-label').html(app.current.get_label());
+    $('#info-location').html(app.current.get_location_name());
+    $('#info-minimap').attr("src", "http://maps.googleapis.com/maps/api/staticmap?key=GOOGLE_MAPS_API_KEY&zoom=2&size=500x300&markers=color:blue|" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6));
+    
     $('#controls').fadeOut(500);
     $('#label-container').fadeOut(500);
     $('#info-overlay').fadeIn(500);
@@ -308,24 +338,18 @@ var app = {
     $('#label-container').fadeIn(500);
   },
 
-  openShareOverlay : function() {
-    app.stopAutoPlay();
-    $('#controls').fadeOut(500);
-    $('#label-container').fadeOut(500);
-    $('#share-overlay').fadeIn(500);
-  },
-
-  closeShareOverlay : function() {
-    $('#share-overlay').fadeOut(500);
-    $('#controls').fadeIn(500);
-    $('#label-container').fadeIn(500);
-  },
-
   updateLabel : function() {
-    if (!app.current) return;
-    $(document).attr('title', app.current.get_label() + ' - Random Airports');
-    $('#label').html(app.current.get_label());
-    $('#location').html(app.current.get_location_name());
+    if (app.current) {
+      History.setTitle({ title: app.current.get_label() + ' - Random Airports'});
+      History.setHash(app.current.get_code(), false);
+      $('#label').html(app.current.get_label());
+      $('#location').html(app.current.get_location_name());
+    } else {
+      History.setTitle({ title: 'Random Airports'});
+      History.setHash('', false);
+      $('#label').html('Random Airports');
+      $('#location').html('');
+    }
   },
 
   onStartLoading : function() {
@@ -352,11 +376,6 @@ var app = {
       map_buffer.remove();
     }
     
-    if (app.current) {
-      History.setHash(app.current.get_code());
-    }
-    
-    app.updateLabel();
     $('#control-random > i').removeClass('fa-spin');
     app.loading = false;
   },
@@ -368,7 +387,7 @@ var app = {
     app.loading = true;
     app.onStartLoading();
 
-    airport_id = airport_id.toUpperCase().replace(/[^A-Za-z0-9-]/g, '');
+    airport_id = app.sanitize_query(airport_id);
     if (airport_id != "") {
       console.log("loading " + airport_id + "...");
       $.get("api.php?id=" + airport_id, function(data) {
@@ -378,14 +397,12 @@ var app = {
           app.current.load_from_json(json.airport);
           
           google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
-          setTimeout(function(){
-            $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
-            }, 2000);
-          });
+          setTimeout(function(){ $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); }); }, 2000); });
           setTimeout(function(){ app.onFinishLoading(); }, 3000);
   
           app.max_zoom = -1;
           app.fitMap();
+          app.updateLabel();
         } else {
           app.track('error', 'airport not found' + airport_id);
           app.displayMessage('Error loading requested airport (' + airport_id + '). Loading a random airport instead.');
@@ -404,14 +421,12 @@ var app = {
           app.current.load_from_json(json.airport);
           
           google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
-          setTimeout(function(){
-            $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); });
-            }, 2000);
-          });
+          setTimeout(function(){ $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); }); }, 2000); });
           setTimeout(function(){ app.onFinishLoading(); }, 3000);
   
           app.max_zoom = -1;
           app.fitMap();
+          app.updateLabel();
         } else {
           app.track('error', 'cannot load random airport');
           app.displayMessage('Error loading random airport.');
@@ -432,13 +447,6 @@ var app = {
 };
 
 var _gaq = _gaq || [];
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
 
 $(document).ready(function(){
   _gaq.push(['_setAccount', 'GOOGLE_ANALYTICS_ACCOUNT']);

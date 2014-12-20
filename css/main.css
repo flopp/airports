@@ -184,6 +184,10 @@ a:active {
   display:none;
 }
 
+#info-minimap {
+  cursor: pointer;
+}
+
 @media (min-width: 800px) {
   .overlay-content {
     position: absolute;
