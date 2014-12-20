@@ -71,7 +71,7 @@ var app = {
       app.closeWelcomeOverlay(false);
     });
     
-    $('#about-overlay').click(function() {
+    $('#about-overlay').click(function(event) {
       // don't close info overlay when clicking on a link
       if (event.target && event.target.tagName == 'A') {
         event.stopPropagation();
@@ -81,7 +81,7 @@ var app = {
       app.track('about-overlay', 'background-click');
       app.closeAboutOverlay();
       });
-    $('#about-overlay .close-button').click(function(){
+    $('#about-overlay .close-button').click(function(event){
       event.stopPropagation();
       app.track('about-overlay', 'close-button-click');
       app.closeAboutOverlay();
@@ -99,19 +99,19 @@ var app = {
       app.closeInfoOverlay();
     });
     
-    $('#info-overlay #open-google-maps').click(function(){
+    $('#info-overlay #open-google-maps').click(function(event){
       event.stopPropagation();
       app.openGoogleMaps();
     });
-    $('#info-overlay #info-minimap').click(function(){
+    $('#info-overlay #info-minimap').click(function(event){
       event.stopPropagation();
       app.openGoogleMaps();
     });
-    $('#info-overlay #open-ourairports').click(function(){
+    $('#info-overlay #open-ourairports').click(function(event){
       event.stopPropagation();
       app.openOurAirports();
     });
-    $('#info-overlay #open-flightradar24').click(function(){
+    $('#info-overlay #open-flightradar24').click(function(event){
       event.stopPropagation();
       app.openFlightRadar24();
     });
