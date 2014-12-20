@@ -296,8 +296,10 @@ if __name__ == "__main__":
     import os
 
     if not os.path.isfile("airports.csv"):
+        print("retrieving http://ourairports.com/data/airports.csv")
         urllib.URLopener().retrieve("http://ourairports.com/data/airports.csv", "airports.csv")
     if not os.path.isfile("runways.csv"):
+        print("retrieving http://ourairports.com/data/runways.csv")
         urllib.URLopener().retrieve("http://ourairports.com/data/runways.csv", "runways.csv")
 
     airports = AirportsTable("airports.csv")
