@@ -261,7 +261,7 @@ class Runway:
         
     def has_hard_surface(self):
         import re
-        return re.search('con|asp|tar', self.__surface, re.IGNORECASE) != None
+        return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) != None
 
 
 class RunwaysTable:
