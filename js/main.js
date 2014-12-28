@@ -19,6 +19,7 @@ var app = {
     app.autoplay = false;
     app.autoplay_timer = null;
     app.hide_message_timer = null;
+    app.additional_copyright_div = null;
     
     var opt = {
       mapTypeId: google.maps.MapTypeId.SATELLITE,
@@ -27,6 +28,15 @@ var app = {
       backgroundColor: '#000000'};
     app.map = new google.maps.Map($('#map')[0],opt);
     app.max_zoom_service = new google.maps.MaxZoomService();
+    
+    app.mapquest_tiles = new google.maps.ImageMapType({
+      getTileUrl: function(coord, zoom) { return app.tileUrl("http://otile%s.mqcdn.com/tiles/1.0.0/osm/%z/%x/%y.png", ["1","2","3","4"], coord, zoom); },
+      tileSize: new google.maps.Size(256, 256),
+      name: "Mapquest",
+      alt: "MapQuest (OSM)",
+      maxZoom: 18 });
+    app.map.mapTypes.set(app.mapquest_tiles.name, app.mapquest_tiles);
+    app.mapquest_copyright_notice = '<div>Map data &copy; by <a href="http://www.openstreetmap.org/">OpenStreetMap.org</a> and its contributors; <a href="http://opendatacommons.org/licenses/odbl/">Open Database License</a>, tiles &copy; by <a href="http://mapquest.com">MapQuest</a></div>';
     
     // close welcome page if an airport is specified in the url
     if (History.getHash() != "") {
@@ -60,6 +70,10 @@ var app = {
     $('#control-play').click(function() {
       app.track("control", "play");
       app.toggleAutoPlay();
+      });
+    $('#control-switch-map').click(function() {
+      app.track("control", "switch-map");
+      app.switchMapStyle();
       });
     
     $('#welcome-overlay').click(function() {
@@ -225,7 +239,7 @@ var app = {
       } else {
         app.map.setZoom(Math.min(needed_zoom, app.max_zoom));
       }
-    },
+  },
     
   fitMap : function() {
     if (!app.current) return;
@@ -244,6 +258,35 @@ var app = {
       });
     } else {
       app.adjustZoom();
+    }
+  },
+  
+  tileUrl : function(template, servers, coord, zoom) {
+    var limit = Math.pow(2, zoom);
+    var x = ((coord.x % limit) + limit) % limit;
+    var y = coord.y;
+    var s = servers[(Math.abs(x + y)) % servers.length];
+    return template.replace(/%s/, s).replace(/%x/, x).replace(/%y/, y).replace(/%z/, zoom);
+  },
+   
+  switchMapStyle : function() {
+    if (app.map.getMapTypeId() == google.maps.MapTypeId.SATELLITE) {
+      if (!app.additional_copyright_div) {
+        app.additional_copyright_div = $('<div>', { id: "map-copyright" });
+        app.map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(app.additional_copyright_div[0]);
+      }
+      
+      app.additional_copyright_div.html(app.mapquest_copyright_notice);
+      app.additional_copyright_div.show();
+      
+      app.map.setMapTypeId(app.mapquest_tiles.name);
+      app.fitMap();
+    } else {
+      if (app.additional_copyright_div) {
+        app.additional_copyright_div.hide();
+      }
+      app.map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+      app.fitMap();
     }
   },
   
