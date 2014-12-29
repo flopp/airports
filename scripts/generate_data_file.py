@@ -32,9 +32,12 @@ class Bounds:
     def get_max(self):
         return None if self.__lat0 is None else (self.__lat1, self.__lng1)
 
+
 def quote(s):
     import re
+
     return re.sub('"', "'", s)
+
 
 class Airport:
     def __init__(self):
@@ -105,17 +108,17 @@ class Airport:
             'closed': 'C',
             'heliport': 'H'
         }.get(type, '?')
-    
+
     def non_empty_bounds(self):
-      latlng1 = self.__bounds.get_min()
-      latlng2 = self.__bounds.get_max()
-      return latlng1 != latlng2
-    
+        latlng1 = self.__bounds.get_min()
+        latlng2 = self.__bounds.get_max()
+        return latlng1 != latlng2
+
     def non_excessive_bounds(self):
-      latlng1 = self.__bounds.get_min()
-      latlng2 = self.__bounds.get_max()
-      d = max(abs(latlng1[0]-latlng2[0]), abs(latlng1[1]-latlng2[1]))
-      return d < 0.5
+        latlng1 = self.__bounds.get_min()
+        latlng2 = self.__bounds.get_max()
+        d = max(abs(latlng1[0] - latlng2[0]), abs(latlng1[1] - latlng2[1]))
+        return d < 0.5
 
     def to_sql_string(self):
         iata = self.__iata_code
@@ -134,7 +137,6 @@ class Airport:
                     latlng2[0], latlng2[1],
                     self.__runways)
 
-
     def compute_bounds(self, runways):
         self.__runways = 0
         for runway in runways:
@@ -148,7 +150,7 @@ class AirportsTable:
     def __init__(self, file_name):
         self.__fields = None
         self.__items = []
-        
+
         with open(file_name) as csv_file:
             reader = csv.reader(csv_file, delimiter=',')
             for row in reader:
@@ -163,26 +165,31 @@ class AirportsTable:
         for airport in self.__items:
             if airport.id() in runways_dict:
                 airport.compute_bounds(runways_dict[airport.id()])
-    
+
     def to_sql(self, file_name):
         import sqlite3
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
         db = sqlite3.connect(file_name)
 
         cur = db.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
         db.commit()
 
         cur = db.cursor()
         count = 0
         for airport in self.__items:
             if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()) and (airport.non_excessive_bounds()):
-                count = count + 1
+                count += 1
                 values = airport.to_sql_string()
-                cur.execute("INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
-                            .format(values))
+                cur.execute(
+                    "INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
+                    .format(values))
         db.commit()
         print("airports {0}".format(count))
-    
+
     def check(self):
         for airport in self.__items:
             if not airport.non_excessive_bounds():
@@ -226,42 +233,50 @@ class Runway:
         self.__surface = array[5]
         self.__lighted = array[6]
         self.__closed = array[7]
-        self.__le_ident = array[8]
+        self.__le_ident = array[8].replace('"', '')
         self.__le_latitude_deg = array[9].replace(',', '.')
         self.__le_longitude_deg = array[10].replace(',', '.')
         self.__le_elevation_ft = array[11]
         self.__le_heading_degT = array[12]
         self.__le_displaced_threshold_ft = array[14]
-        self.__he_ident = array[14]
+        self.__he_ident = array[14].replace('"', '')
         self.__he_latitude_deg = array[15].replace(',', '.')
         self.__he_longitude_deg = array[16].replace(',', '.')
         self.__he_elevation_ft = array[17]
         self.__he_heading_degT = array[18]
         self.__he_displaced_threshold_ft = array[19]
-        
+
         if self.__le_latitude_deg != "" and self.__le_longitude_deg != "":
             self.__le_latlng = (float(self.__le_latitude_deg), float(self.__le_longitude_deg))
         if self.__he_latitude_deg != "" and self.__he_longitude_deg != "":
             self.__he_latlng = (float(self.__he_latitude_deg), float(self.__he_longitude_deg))
-        
+
     def airport_id(self):
         return self.__airport_ident
-    
+
     def le_latlng(self):
         return self.__le_latlng
-    
+
     def he_latlng(self):
         return self.__he_latlng
-    
+
     def is_closed(self):
         return self.__closed == '1'
-    
+
     def has_coordinates(self):
-        return self.__le_latlng != None or self.__he_latlng != None 
-        
+        return self.__le_latlng is not None or self.__he_latlng is not None
+
     def has_hard_surface(self):
         import re
-        return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) != None
+
+        return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) is not None    
+        
+    def to_sql_string(self):
+        (he_lat, he_lng) = ('{:.4f}'.format(self.__he_latlng[0]), '{:.4f}'.format(self.__he_latlng[1])) if (self.__he_latlng is not None) else ('', '')
+        (le_lat, le_lng) = ('{:.4f}'.format(self.__le_latlng[0]), '{:.4f}'.format(self.__le_latlng[1])) if (self.__le_latlng is not None) else ('', '')
+
+        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}"' \
+            .format(self.__airport_ident, self.__he_ident, he_lat, he_lng, self.__le_ident, le_lat, le_lng)
 
 
 class RunwaysTable:
@@ -291,6 +306,31 @@ class RunwaysTable:
                 d[runway.airport_id()] = [runway]
         return d
 
+    def to_sql(self, file_name):
+        import sqlite3
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
+        db = sqlite3.connect(file_name)
+
+        cur = db.cursor()
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS runways (airport_ident TEXT, he_name TEXT, he_lat DECIMAL(9,6), he_lng DECIMAL(9,6), le_name TEXT, le_lat DECIMAL(9,6), le_lng DECIMAL(9,6));")
+        db.commit()
+
+        cur = db.cursor()
+        count = 0
+        for runway in self.__items:
+            if runway.has_coordinates() and runway.has_hard_surface() and not runway.is_closed():
+                count += 1
+                values = runway.to_sql_string()
+                sql = "INSERT INTO runways (airport_ident, he_name, he_lat, he_lng, le_name, le_lat, le_lng) VALUES ({0});".format(values)
+                cur.execute(sql)
+        db.commit()
+        print("runways {0}".format(count))
+
+
 if __name__ == "__main__":
     import urllib
     import os
@@ -307,3 +347,4 @@ if __name__ == "__main__":
     airports.compute_bounds(runways.to_dict())
     airports.check()
     airports.to_sql("airports.sqlite")
+    runways.to_sql("runways.sqlite")
