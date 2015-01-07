@@ -9,7 +9,6 @@ $votes_db_file = "data/votes.sqlite";
 $messages = array();
 $mode = "list";
 $query = "";
-$runways = 0;
 
 function sanitize_query_id($s)
 {
@@ -129,14 +128,31 @@ class AirportsDB extends PDO
       return array();
     }
     
-    public function get_random_airport($runways)
+    public function get_random_airport()
     {
-      $result = $this->query('SELECT * FROM airports WHERE runways >= ' . $runways . ' ORDER BY RANDOM() LIMIT 1;');
-      foreach ($result as $m) 
-      {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+      if (rand(0,1)) {
+        // large airport
+        $result = $this->query('SELECT * FROM airports WHERE type IS "L" ORDER BY RANDOM() LIMIT 1;');
+        foreach ($result as $m) 
+        {
+          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+        }
+      } else if (rand(0,1)) {
+        // medium airport
+        $result = $this->query('SELECT * FROM airports WHERE type IS "M" ORDER BY RANDOM() LIMIT 1;');
+        foreach ($result as $m) 
+        {
+          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+        }
+      } else {
+        // any (large, medium, small) airport
+        $result = $this->query('SELECT * FROM airports ORDER BY RANDOM() LIMIT 1;');
+        foreach ($result as $m) 
+        {
+          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+        }
       }
+      
       return array();
     }
 }
@@ -243,7 +259,7 @@ else if ($mode == "random")
   try 
   {
       $db = new AirportsDB('sqlite:' . $db_file);
-      $airport = $db->get_random_airport($runways);
+      $airport = $db->get_random_airport();
       $db = null;
   }
   catch (PDOException $e) 
