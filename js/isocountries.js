@@ -247,10 +247,10 @@ __isoCountries = {
   'ZW' : 'Zimbabwe'
 };
 
-function getCountryName(countryCode) {
-  if (__isoCountries.hasOwnProperty(countryCode)) {
-    return __isoCountries[countryCode];
+function getCountryName(code) {
+  if (__isoCountries.hasOwnProperty(code)) {
+    return __isoCountries[code];
   } else {
-     return countryCode;
+     return '';
   } 
 }

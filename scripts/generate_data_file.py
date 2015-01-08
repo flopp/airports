@@ -130,9 +130,9 @@ class Airport:
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
 
-        return '"{0}","{1}","{2}","{3}","{4}","{5}",{6},{7},{8},{9},{10}' \
+        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}",{7},{8},{9},{10},{11}' \
             .format(self.__ident, iata, quote(self.__name), self.shorten_type(self.__type),
-                    self.__iso_country, quote(self.__municipality),
+                    self.__iso_country, self.__iso_region, quote(self.__municipality),
                     latlng1[0], latlng1[1],
                     latlng2[0], latlng2[1],
                     self.__runways)
@@ -175,7 +175,7 @@ class AirportsTable:
 
         cur = db.cursor()
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
+            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
         db.commit()
 
         cur = db.cursor()
@@ -185,7 +185,7 @@ class AirportsTable:
                 count += 1
                 values = airport.to_sql_string()
                 cur.execute(
-                    "INSERT INTO airports (id, iata, name, type, country, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
+                    "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
                     .format(values))
         db.commit()
         print("airports {0}".format(count))

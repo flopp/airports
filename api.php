@@ -65,7 +65,7 @@ class AirportsDB extends PDO
     {
          parent :: __construct($dsn, $username, $password, $driver_options);
          $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6), lat2 DECIMAL(9,6), lon2 DECIMAL(9,6));");
+         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6), lat2 DECIMAL(9,6), lon2 DECIMAL(9,6));");
     }
     
     public function get_ids()
@@ -79,17 +79,21 @@ class AirportsDB extends PDO
         return $ids;
     }
     
+    public function to_array($m)
+    {
+      return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "region" => $m["region"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+    }
+    
     public function get_airport($id)
     {
       $result = $this->query('SELECT * FROM airports WHERE id IS "' . $id .'" COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
       }
       return array();
     }
-    
+  
     public function search_airport($query)
     {
       if ($query == "") 
@@ -100,29 +104,25 @@ class AirportsDB extends PDO
       $result = $this->query('SELECT * FROM airports WHERE id IS "' . $query .'"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
       }
       
       $result = $this->query('SELECT * FROM airports WHERE iata IS "' . $query .'"  COLLATE NOCASE LIMIT 1;');
       foreach ($result as $m) 
       {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
       }
       
       $result = $this->query('SELECT * FROM airports WHERE name LIKE "%' . $query .'%"  COLLATE NOCASE ORDER BY runways DESC LIMIT 1;');
       foreach ($result as $m) 
       {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
       }
       
       $result = $this->query('SELECT * FROM airports WHERE city LIKE "%' . $query .'%"  COLLATE NOCASE ORDER BY runways DESC LIMIT 1;');
       foreach ($result as $m) 
       {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], 
-                       "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
       }
       
       return array();
@@ -135,21 +135,21 @@ class AirportsDB extends PDO
         $result = $this->query('SELECT * FROM airports WHERE type IS "L" ORDER BY RANDOM() LIMIT 1;');
         foreach ($result as $m) 
         {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
         }
       } else if (rand(0,1)) {
         // medium airport
         $result = $this->query('SELECT * FROM airports WHERE type IS "M" ORDER BY RANDOM() LIMIT 1;');
         foreach ($result as $m) 
         {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
         }
       } else {
         // any (large, medium, small) airport
         $result = $this->query('SELECT * FROM airports ORDER BY RANDOM() LIMIT 1;');
         foreach ($result as $m) 
         {
-          return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+          return $this->to_array($m);
         }
       }
       
