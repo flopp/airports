@@ -50,11 +50,11 @@ var app = {
       app.loadAirport("");
     });
 
-    google.maps.event.addListenerOnce(app.map, 'idle', function(){
+    google.maps.event.addListener(app.map, 'idle', function(){
       console.log('map idle');
     });
 
-    google.maps.event.addListenerOnce(app.map, 'tilesloaded', function(){
+    google.maps.event.addListener(app.map, 'tilesloaded', function(){
       console.log('map tiles loaded');
     });
 
