@@ -140,7 +140,8 @@ class Airport:
     def compute_bounds(self, runways):
         self.__runways = 0
         for runway in runways:
-            if (not runway.is_closed()) and runway.has_hard_surface() and runway.has_coordinates():
+            #if (not runway.is_closed()) and runway.has_hard_surface() and runway.has_coordinates():
+            if runway.has_hard_surface() and runway.has_coordinates():
                 self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
