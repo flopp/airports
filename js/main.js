@@ -50,11 +50,19 @@ var app = {
       app.loadAirport("");
     });
 
+    google.maps.event.addListenerOnce(app.map, 'idle', function(){
+      console.log('map idle');
+    });
+
+    google.maps.event.addListenerOnce(app.map, 'tilesloaded', function(){
+      console.log('map tiles loaded');
+    });
+
     google.maps.event.addDomListener(window, 'resize', function() {
       google.maps.event.trigger(app.map, 'resize');
       app.fitMap();
-    });
-
+    });   
+    
     $('#control-about').click(function() {
       app.track("control", "about");
       app.openAboutOverlay();
