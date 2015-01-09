@@ -14,6 +14,7 @@ $.fn.pressEnter = function(fn) {
 var app = {
   init : function() {
     app.loading = false;
+    app.load_timeout = -1;
     app.current = null;
     app.max_zoom = -1;
     app.autoplay = false;
@@ -48,14 +49,6 @@ var app = {
     google.maps.event.addListener(app.map, 'click', function(event) {
       app.track("map", "click");
       app.loadAirport("");
-    });
-
-    google.maps.event.addListener(app.map, 'idle', function(){
-      console.log('map idle');
-    });
-
-    google.maps.event.addListener(app.map, 'tilesloaded', function(){
-      console.log('map tiles loaded');
     });
 
     google.maps.event.addDomListener(window, 'resize', function() {
@@ -408,6 +401,13 @@ var app = {
       return;
     }
     
+    if (app.load_timeout != -1) {
+      clearTimeout(app.load_timeout);
+      app.load_timeout = -1;
+    }
+    
+    google.maps.event.clearListeners(app.map, 'tilesloaded');
+    
     var map_buffer = $('#map-buffer');
     if (map_buffer) {
       map_buffer.remove();
@@ -421,6 +421,13 @@ var app = {
     if (!app.loading) {
       return;
     }
+    
+    if (app.load_timeout != -1) {
+      clearTimeout(app.load_timeout);
+      app.load_timeout = -1;
+    }
+    
+    google.maps.event.clearListeners(app.map, 'tilesloaded');
     
     var map_buffer = $('#map-buffer');
     if (map_buffer) {
@@ -447,13 +454,17 @@ var app = {
           app.current = new Airport;
           app.current.load_from_json(json.airport);
           
-          google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
-          setTimeout(function(){ $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); }); }, 2000); });
-          setTimeout(function(){ app.onFinishLoading(); }, 3000);
+          google.maps.event.addListenerOnce(app.map, 'tilesloaded', function(){
+            $('#map-buffer').fadeOut(500, function(){ app.onFinishLoading(); });
+            app.updateLabel();
+          });
+          app.load_timeout = setTimeout(function(){ 
+            $('#map-buffer').fadeOut(500, function(){ app.onFinishLoading(); });
+            app.updateLabel();
+          }, 5000);
   
           app.max_zoom = -1;
           app.fitMap();
-          app.updateLabel();
         } else {
           app.track('error', 'airport not found' + airport_id);
           app.displayMessage('Error loading requested airport (' + airport_id + '). Loading a random airport instead.');
@@ -471,13 +482,17 @@ var app = {
           app.current = new Airport;
           app.current.load_from_json(json.airport);
           
-          google.maps.event.addListenerOnce(app.map, 'bounds_changed', function(){
-          setTimeout(function(){ $('#map-buffer').fadeOut(1000, function(){ app.onFinishLoading(); }); }, 2000); });
-          setTimeout(function(){ app.onFinishLoading(); }, 3000);
+          google.maps.event.addListenerOnce(app.map, 'tilesloaded', function(){
+            $('#map-buffer').fadeOut(500, function(){ app.onFinishLoading(); });
+            app.updateLabel();
+          });
+          app.load_timeout = setTimeout(function(){ 
+            $('#map-buffer').fadeOut(500, function(){ app.onFinishLoading(); });
+            app.updateLabel();
+          }, 5000);
   
           app.max_zoom = -1;
           app.fitMap();
-          app.updateLabel();
         } else {
           app.track('error', 'cannot load random airport');
           app.displayMessage('Error loading random airport.');
