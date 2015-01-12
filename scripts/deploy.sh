@@ -3,7 +3,7 @@
 #TARGET=flopp@grus.uberspace.de:html/
 TARGET=flopp@95.143.172.223:html/
 DEPLOY=deploy/airports_fraig.de
-mkdir -p $DEPLOY ;      cp index.html api.php $DEPLOY
+mkdir -p $DEPLOY ;      cp index.html api.php sitemap.xml $DEPLOY
 mkdir -p $DEPLOY/js ;   cp js/* $DEPLOY/js
 mkdir -p $DEPLOY/css ;  cp css/* $DEPLOY/css
 mkdir -p $DEPLOY/data ; cp data/* $DEPLOY/data
@@ -39,5 +39,6 @@ if [ -f config.txt ] ; then
   sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" $DEPLOY/index.html 
   sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" -e "s/GOOGLE_ANALYTICS_ACCOUNT/${GOOGLE_ANALYTICS_ACCOUNT}/g" $DEPLOY/js/main.js
 fi
+sed -i -e "s/TIMESTAMP/$(date +%Y-%m-%dT%H:%M:%S%:z)/g" $DEPLOY/sitemap.xml
 
 scp -C -r $DEPLOY $TARGET
