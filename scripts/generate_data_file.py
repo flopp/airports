@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import csv
+import math
 
 
 class Bounds:
@@ -63,6 +64,7 @@ class Airport:
 
         self.__latlng = None
         self.__bounds = None
+        self.__nearest = None
 
     def set_from_array(self, array):
         if len(array) != 18:
@@ -87,7 +89,6 @@ class Airport:
         self.__wikipedia_link = array[16]
         self.__keywords = array[17]
         self.__runways = 0
-
         self.__latlng = (float(self.__latitude_deg), float(self.__longitude_deg))
         self.__bounds = Bounds()
         self.__bounds.extend(self.__latlng)
@@ -108,7 +109,13 @@ class Airport:
             'closed': 'C',
             'heliport': 'H'
         }.get(type, '?')
-
+    
+    def lat(self):
+        return self.__latlng[0]
+    
+    def lng(self):
+        return self.__latlng[1]
+    
     def non_empty_bounds(self):
         latlng1 = self.__bounds.get_min()
         latlng2 = self.__bounds.get_max()
@@ -130,12 +137,13 @@ class Airport:
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
 
-        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}",{7},{8},{9},{10},{11}' \
+        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}",{7},{8},{9},{10},{11},"{12}","{13}","{14}"' \
             .format(self.__ident, iata, quote(self.__name), self.shorten_type(self.__type),
                     self.__iso_country, self.__iso_region, quote(self.__municipality),
                     latlng1[0], latlng1[1],
                     latlng2[0], latlng2[1],
-                    self.__runways)
+                    self.__runways,
+                    self.__nearest[0], self.__nearest[1], self.__nearest[2])
 
     def compute_bounds(self, runways):
         self.__runways = 0
@@ -145,12 +153,14 @@ class Airport:
                 self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
-
+    
+    def set_nearest(self, nearest):
+        self.__nearest = nearest
 
 class AirportsTable:
     def __init__(self, file_name):
         self.__fields = None
-        self.__items = []
+        self.__items = {}
 
         with open(file_name) as csv_file:
             reader = csv.reader(csv_file, delimiter=',')
@@ -160,12 +170,12 @@ class AirportsTable:
                 else:
                     airport = Airport()
                     airport.set_from_array(row)
-                    self.__items.append(airport)
+                    self.__items[airport.id()] = airport
 
     def compute_bounds(self, runways_dict):
-        for airport in self.__items:
-            if airport.id() in runways_dict:
-                airport.compute_bounds(runways_dict[airport.id()])
+        for id, airport in self.__items.iteritems():
+            if id in runways_dict:
+                airport.compute_bounds(runways_dict[id])
 
     def to_sql(self, file_name):
         import sqlite3
@@ -176,26 +186,51 @@ class AirportsTable:
 
         cur = db.cursor()
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER);")
+            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER, nearest1 TEXT, nearest2 TEXT, nearest3 TEXT);")
         db.commit()
 
         cur = db.cursor()
         count = 0
-        for airport in self.__items:
-            if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and (airport.non_empty_bounds()) and (airport.non_excessive_bounds()):
-                count += 1
-                values = airport.to_sql_string()
-                cur.execute(
-                    "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways) VALUES ({0});"
-                    .format(values))
+        for id, airport in self.__items.iteritems():
+            count += 1
+            values = airport.to_sql_string()
+            cur.execute(
+                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearest1, nearest2, nearest3) VALUES ({0});"
+                .format(values))
         db.commit()
         print("airports {0}".format(count))
 
     def check(self):
-        for airport in self.__items:
+        for id, airport in self.__items.iteritems():
             if not airport.non_excessive_bounds():
                 print("{0}: bad runway coordinates".format(airport.id()))
-
+    
+    def wipe_bad_airports(self):
+        remaining = {}
+        for id, airport in self.__items.iteritems():
+            if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and airport.non_empty_bounds() and airport.non_excessive_bounds():
+                remaining[id] = airport
+        self.__items = remaining
+    
+    def compute_nearest(self):
+        helpers = []
+        for id, a in self.__items.iteritems():
+            degrees_to_radians = math.pi/180.0
+            phi = (90.0 - a.lat()) * degrees_to_radians
+            theta = a.lng() * degrees_to_radians
+            sin_phi = math.sin(phi)
+            cos_phi = math.cos(phi)
+            helpers.append((a.id(), theta, sin_phi, cos_phi))
+        
+        for (index, (id1, theta1, sin_phi1, cos_phi1)) in enumerate(helpers):
+            print(index, len(helpers))
+            distances = []
+            for (id2, theta2, sin_phi2, cos_phi2) in helpers:
+                if id1 != id2:
+                    d = math.acos((sin_phi1 * sin_phi2 * math.cos(theta1 - theta2) + cos_phi1 * cos_phi2))
+                    distances.append((id2, d))
+            distances = sorted(distances, key=lambda x: x[1])[:3]
+            self.__items[id1].set_nearest([distances[0][0], distances[1][0], distances[2][0]])
 
 class Runway:
     def __init__(self):
@@ -347,5 +382,8 @@ if __name__ == "__main__":
     runways = RunwaysTable("runways.csv")
     airports.compute_bounds(runways.to_dict())
     airports.check()
+    airports.wipe_bad_airports()
+    airports.compute_nearest()
+    
     airports.to_sql("airports.sqlite")
     runways.to_sql("runways.sqlite")
