@@ -65,7 +65,7 @@ class AirportsDB extends PDO
     {
          parent :: __construct($dsn, $username, $password, $driver_options);
          $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6), lat2 DECIMAL(9,6), lon2 DECIMAL(9,6));");
+         $this->exec("CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lon1 DECIMAL(9,6), lat2 DECIMAL(9,6), lon2 DECIMAL(9,6), nearby1 TEXT, nearby2 TEXT, nearby3 TEXT);");
     }
     
     public function get_ids()
@@ -81,7 +81,10 @@ class AirportsDB extends PDO
     
     public function to_array($m)
     {
-      return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], "country" => $m["country"], "region" => $m["region"], "city" => $m["city"], "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"]);
+      return array("id" => $m["id"], "iata" => $m["iata"], "name" => $m["name"], "type" => $m["type"], 
+      "country" => $m["country"], "region" => $m["region"], "city" => $m["city"], 
+      "lat1" => $m["lat1"], "lng1" => $m["lng1"], "lat2" => $m["lat2"], "lng2" => $m["lng2"], 
+      "nearby1" => $m["nearby1"], "nearby2" => $m["nearby2"], "nearby3" => $m["nearby3"]);
     }
     
     public function get_airport($id)

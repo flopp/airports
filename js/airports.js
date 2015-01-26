@@ -5,7 +5,8 @@ function Airport() {
   this.m_bounds = null;
   this.m_zoom = 14;
   this.m_country = "";
-  this.m_city = "";  
+  this.m_city = "";
+  this.m_nearby = null;  
 }
 
 Airport.prototype.m_code = "";
@@ -16,6 +17,7 @@ Airport.prototype.m_zoom = 14;
 Airport.prototype.m_country = "";
 Airport.prototype.m_region = "";
 Airport.prototype.m_city = "";
+Airport.prototype.m_nearby = null;
 
 Airport.prototype.load_from_json = function(json) {
   this.m_code = json.id;
@@ -39,6 +41,11 @@ Airport.prototype.load_from_json = function(json) {
     this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-lat_margin, latlng0.lng()-lng_margin));
     this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+lat_margin, latlng1.lng()+lng_margin));
   }  
+  
+  this.m_nearby = new Array();
+  this.m_nearby.push(json.nearby1);
+  this.m_nearby.push(json.nearby2);
+  this.m_nearby.push(json.nearby3);
 }
 
 Airport.prototype.get_code = function() {
@@ -92,4 +99,8 @@ Airport.prototype.get_location_name = function() {
   }
   
   return loc;
+}
+
+Airport.prototype.get_nearby = function() {
+  return this.m_nearby;
 }

@@ -74,6 +74,10 @@ a:active {
   background-color: transparent;
 }
 
+#info-nearby {
+  list-style-type: none;
+}
+
 @media (min-width: 800px) {
   #message-container {
     display: none;
@@ -275,6 +279,7 @@ a:active {
   .my-btn {
     display: inline-block;
     padding: 10px 16px;
+    margin-top: 4px;
     margin-bottom: 0;
     font-size: 20px;
     font-weight: 400;
@@ -344,6 +349,7 @@ a:active {
   .my-btn {
     display: inline-block;
     padding: 10px 16px;
+    margin-top: 4px;
     margin-bottom: 0;
     font-size: 20px;
     font-weight: 400;

@@ -371,6 +371,19 @@ var app = {
     $('#info-location').html(app.current.get_location_name());
     $('#info-minimap').attr("src", "http://maps.googleapis.com/maps/api/staticmap?key=GOOGLE_MAPS_API_KEY&zoom=2&size=500x300&markers=color:blue|" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6));
     
+    $('#info-nearby').empty();
+    var nearbyLength = app.current.get_nearby().length;
+    for (var i = 0; i < nearbyLength; i++) {
+      var nearby = app.current.get_nearby()[i];
+      $('#info-nearby').append('<li><button class="my-btn" id="info-nearby-' + nearby + '">' + nearby + '</button></li>');
+      $('#info-nearby-' + nearby).click({airport_id: nearby}, function(event) {
+        app.closeInfoOverlay();
+        event.stopPropagation();
+        app.track("nearby", event.data.airport_id);
+        app.loadAirport(event.data.airport_id);
+      });
+    }
+    
     $('#controls').fadeOut(500);
     $('#label-container').fadeOut(500);
     $('#info-overlay').fadeIn(500);

@@ -64,7 +64,7 @@ class Airport:
 
         self.__latlng = None
         self.__bounds = None
-        self.__nearest = None
+        self.__nearby = None
 
     def set_from_array(self, array):
         if len(array) != 18:
@@ -143,7 +143,7 @@ class Airport:
                     latlng1[0], latlng1[1],
                     latlng2[0], latlng2[1],
                     self.__runways,
-                    self.__nearest[0], self.__nearest[1], self.__nearest[2])
+                    self.__nearby[0], self.__nearby[1], self.__nearby[2])
 
     def compute_bounds(self, runways):
         self.__runways = 0
@@ -154,8 +154,8 @@ class Airport:
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
     
-    def set_nearest(self, nearest):
-        self.__nearest = nearest
+    def set_nearby(self, nearby):
+        self.__nearby = nearby
 
 class AirportsTable:
     def __init__(self, file_name):
@@ -186,7 +186,7 @@ class AirportsTable:
 
         cur = db.cursor()
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER, nearest1 TEXT, nearest2 TEXT, nearest3 TEXT);")
+            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER, nearby1 TEXT, nearby2 TEXT, nearby3 TEXT);")
         db.commit()
 
         cur = db.cursor()
@@ -195,7 +195,7 @@ class AirportsTable:
             count += 1
             values = airport.to_sql_string()
             cur.execute(
-                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearest1, nearest2, nearest3) VALUES ({0});"
+                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearby1, nearby2, nearby3) VALUES ({0});"
                 .format(values))
         db.commit()
         print("airports {0}".format(count))
@@ -212,7 +212,7 @@ class AirportsTable:
                 remaining[id] = airport
         self.__items = remaining
     
-    def compute_nearest(self):
+    def compute_nearby(self):
         helpers = []
         for id, a in self.__items.iteritems():
             degrees_to_radians = math.pi/180.0
@@ -230,7 +230,7 @@ class AirportsTable:
                     d = math.acos((sin_phi1 * sin_phi2 * math.cos(theta1 - theta2) + cos_phi1 * cos_phi2))
                     distances.append((id2, d))
             distances = sorted(distances, key=lambda x: x[1])[:3]
-            self.__items[id1].set_nearest([distances[0][0], distances[1][0], distances[2][0]])
+            self.__items[id1].set_nearby([distances[0][0], distances[1][0], distances[2][0]])
 
 class Runway:
     def __init__(self):
@@ -383,7 +383,7 @@ if __name__ == "__main__":
     airports.compute_bounds(runways.to_dict())
     airports.check()
     airports.wipe_bad_airports()
-    airports.compute_nearest()
+    airports.compute_nearby()
     
     airports.to_sql("airports.sqlite")
     runways.to_sql("runways.sqlite")
