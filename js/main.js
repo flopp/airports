@@ -375,8 +375,15 @@ var app = {
     var nearbyLength = app.current.get_nearby().length;
     for (var i = 0; i < nearbyLength; i++) {
       var nearby = app.current.get_nearby()[i];
-      $('#info-nearby').append('<li><button class="my-btn" id="info-nearby-' + nearby + '">' + nearby + '</button></li>');
-      $('#info-nearby-' + nearby).click({airport_id: nearby}, function(event) {
+      var nearby_id = nearby;
+      var nearby_label = nearby;
+      var sep_index = nearby.indexOf(':');
+      if (sep_index != -1) {
+        nearby_id = nearby_id.substr(0, sep_index);
+        nearby_label = nearby_label.substr(sep_index + 1);
+      }
+      $('#info-nearby').append('<li><button class="my-btn" id="info-nearby-' + nearby_id + '">' + nearby_label + '</button></li>');
+      $('#info-nearby-' + nearby_id).click({airport_id: nearby_id, airport_label: nearby_label}, function(event) {
         app.closeInfoOverlay();
         event.stopPropagation();
         app.track("nearby", event.data.airport_id);

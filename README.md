@@ -5,6 +5,12 @@ Fullscreen satellite map randomly showing the world's airports.
 
 Website: http://airports.fraig.de/
 
+Some nice airports
+------------------
+* [http://airports.fraig.de/#KSFO](KSFO/SFO - San Francisco International Airport)
+* [http://airports.fraig.de/#PKMJ](PKMJ/MAJ - Marshall Islands International Airport)
+* [http://airports.fraig.de/#EKCH](EKCH/CPH - Copenhagen Kastrup Airport)
+
 Features
 --------
 * Automatic fitting of he satellite view to the displayed airport

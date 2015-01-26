@@ -95,7 +95,13 @@ class Airport:
 
     def id(self):
         return self.__ident
-
+    
+    def fancy_name(self):
+        code = self.__ident
+        if self.__iata_code != "" and self.__iata_code != self.__ident:
+            code = code + "/" + self.__iata_code
+        return code + " - " + self.__name;
+        
     def type(self):
         return self.__type
 
@@ -144,6 +150,23 @@ class Airport:
                     latlng2[0], latlng2[1],
                     self.__runways,
                     self.__nearby[0], self.__nearby[1], self.__nearby[2])
+    
+    def to_sql_array(self):
+        iata = self.__iata_code
+        if iata == self.__ident:
+            iata = ""
+
+        latlng1 = self.__bounds.get_min()
+        latlng2 = self.__bounds.get_max()
+        latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
+        latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
+        
+        return [self.__ident, iata, self.__name.decode('utf-8'), self.shorten_type(self.__type),
+                    self.__iso_country, self.__iso_region, self.__municipality.decode('utf-8'),
+                    latlng1[0], latlng1[1],
+                    latlng2[0], latlng2[1],
+                    self.__runways,
+                    self.__nearby[0].decode('utf-8'), self.__nearby[1].decode('utf-8'), self.__nearby[2].decode('utf-8')]
 
     def compute_bounds(self, runways):
         self.__runways = 0
@@ -193,10 +216,10 @@ class AirportsTable:
         count = 0
         for id, airport in self.__items.iteritems():
             count += 1
-            values = airport.to_sql_string()
+            values = airport.to_sql_array()
             cur.execute(
-                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearby1, nearby2, nearby3) VALUES ({0});"
-                .format(values))
+                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearby1, nearby2, nearby3) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                values)
         db.commit()
         print("airports {0}".format(count))
 
@@ -229,8 +252,12 @@ class AirportsTable:
                 if id1 != id2:
                     d = math.acos((sin_phi1 * sin_phi2 * math.cos(theta1 - theta2) + cos_phi1 * cos_phi2))
                     distances.append((id2, d))
-            distances = sorted(distances, key=lambda x: x[1])[:3]
-            self.__items[id1].set_nearby([distances[0][0], distances[1][0], distances[2][0]])
+            distances = sorted(distances, key=lambda x: x[1])
+            
+            nearby = []
+            for id, d in distances[:3]:
+                nearby.append(id + ":" + self.__items[id].fancy_name())
+            self.__items[id1].set_nearby(nearby)
 
 class Runway:
     def __init__(self):
@@ -370,7 +397,7 @@ class RunwaysTable:
 if __name__ == "__main__":
     import urllib
     import os
-
+    
     if not os.path.isfile("airports.csv"):
         print("retrieving http://ourairports.com/data/airports.csv")
         urllib.URLopener().retrieve("http://ourairports.com/data/airports.csv", "airports.csv")
