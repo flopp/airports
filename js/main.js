@@ -364,6 +364,13 @@ var app = {
     $('#controls').fadeIn(500);
     $('#label-container').fadeIn(500);
   },
+  
+  jumpTo: function(id) {
+      event.stopPropagation();
+      app.closeInfoOverlay();
+      app.closeSearch();
+      app.loadAirport(id);
+  },
 
   openInfoOverlay : function() {
     app.stopAutoPlay();
@@ -382,12 +389,9 @@ var app = {
         nearby_id = nearby_id.substr(0, sep_index);
         nearby_label = nearby_label.substr(sep_index + 1);
       }
-      $('#info-nearby').append('<li><button class="my-btn" id="info-nearby-' + nearby_id + '">' + nearby_label + '</button></li>');
-      $('#info-nearby-' + nearby_id).click({airport_id: nearby_id, airport_label: nearby_label}, function(event) {
-        app.closeInfoOverlay();
-        event.stopPropagation();
-        app.track("nearby", event.data.airport_id);
-        app.loadAirport(event.data.airport_id);
+      $('#info-nearby').append('<li><a class="airport-link" id="info-nearby-' + nearby_id + '">' + nearby_label + '</a></li>');
+      $('#info-nearby-' + nearby_id).click({airport_id: nearby_id}, function(event) {
+        app.jumpTo(event.data.airport_id);
       });
     }
     

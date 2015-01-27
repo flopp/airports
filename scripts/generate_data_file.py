@@ -257,7 +257,7 @@ class AirportsTable:
                 f.write('<h2>{0}</h2>\n'.format(country))
                 f.write('<ul>\n')
                 for airport in airports:
-                    f.write('<li><a href="http://airports.fraig.de/#{0}">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
+                    f.write('<li><a class="airport-link" onclick="javascript:app.jumpTo(\'{0}\');">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
                 f.write('</ul>\n')
     
     
