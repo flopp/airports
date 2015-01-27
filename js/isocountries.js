@@ -118,6 +118,7 @@ __isoCountries = {
   'KR' : 'Korea',
   'KW' : 'Kuwait',
   'KG' : 'Kyrgyzstan',
+  'KS' : 'Kosovo',
   'LA' : 'Lao People\'s Democratic Republic',
   'LV' : 'Latvia',
   'LB' : 'Lebanon',

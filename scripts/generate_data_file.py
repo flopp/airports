@@ -95,13 +95,20 @@ class Airport:
 
     def id(self):
         return self.__ident
+        
+    def name(self):
+        return self.__name;
     
     def fancy_name(self):
         code = self.__ident
         if self.__iata_code != "" and self.__iata_code != self.__ident:
             code = code + "/" + self.__iata_code
         return code + " - " + self.__name;
-        
+    
+    def country(self):
+        return self.__iso_country
+    
+    
     def type(self):
         return self.__type
 
@@ -222,7 +229,38 @@ class AirportsTable:
                 values)
         db.commit()
         print("airports {0}".format(count))
-
+    
+    
+    def dump_list_html(self, file_name):
+        import pycountry
+        
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+        
+        by_country = {}
+        for id, airport in self.__items.iteritems():
+            if airport.type() == 'large_airport':
+                country = 'Unkown'
+                if airport.country() == 'KS':
+                    country = 'Kosovo'
+                else:
+                    country = pycountry.countries.get(alpha2=airport.country()).name
+                if country not in by_country:
+                    by_country[country] = [airport]
+                else:
+                    by_country[country].append(airport)
+        with open(file_name, 'w') as f:
+            countries = sorted(by_country.keys())
+            for country in countries:
+                airports = by_country[country]
+                airports.sort(key = lambda a: a.name())
+                f.write('<h2>{0}</h2>\n'.format(country))
+                f.write('<ul>\n')
+                for airport in airports:
+                    f.write('<li><a href="http://airports.fraig.de/#{0}">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
+                f.write('</ul>\n')
+    
+    
     def check(self):
         for id, airport in self.__items.iteritems():
             if not airport.non_excessive_bounds():
@@ -411,6 +449,6 @@ if __name__ == "__main__":
     airports.check()
     airports.wipe_bad_airports()
     airports.compute_nearby()
-    
+    airports.dump_list_html('airports.html')
     airports.to_sql("airports.sqlite")
     runways.to_sql("runways.sqlite")
