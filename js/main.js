@@ -322,21 +322,21 @@ var app = {
   
   openGoogleMaps : function() {
     if (!app.current) return;
-    app.track("google-maps", app.current.get_label());
+    app.track("google-maps", 'google-maps ' + app.current.get_label());
     var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
     window.open(url, '_blank');
   },
   
   openOurAirports : function() {
     if (!app.current) return;
-    app.track("ourairports", app.current.get_label());
+    app.track("ourairports", 'ourairports ' + app.current.get_label());
     var url = "http://ourairports.com/airports/" + app.current.get_code();
     window.open(url, '_blank');
   },
   
   openFlightRadar24 : function() {
     if (!app.current) return;
-    app.track("flightradar24", app.current.get_label());
+    app.track("flightradar24", 'flightradar24 ' + app.current.get_label());
     var url = "http://www.flightradar24.com/" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "/" + Math.min(15, app.map.getZoom());
     window.open(url, '_blank');
   },
@@ -369,6 +369,7 @@ var app = {
       event.stopPropagation();
       app.closeInfoOverlay();
       app.closeSearch();
+      app.track('jumpto', 'jumpto ' + id);
       app.loadAirport(id);
   },
 
@@ -532,7 +533,7 @@ var app = {
   },
   
   trackSearch : function(query) {
-    if (_gaq) _gaq.push(['_trackEvent','search', query]);
+    if (_gaq) _gaq.push(['_trackEvent', 'search', 'search ' + query]);
   }
 };
 
