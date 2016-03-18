@@ -95,20 +95,20 @@ class Airport:
 
     def id(self):
         return self.__ident
-        
+
     def name(self):
         return self.__name;
-    
+
     def fancy_name(self):
         code = self.__ident
         if self.__iata_code != "" and self.__iata_code != self.__ident:
             code = code + "/" + self.__iata_code
         return code + " - " + self.__name;
-    
+
     def country(self):
         return self.__iso_country
-    
-    
+
+
     def type(self):
         return self.__type
 
@@ -122,13 +122,13 @@ class Airport:
             'closed': 'C',
             'heliport': 'H'
         }.get(type, '?')
-    
+
     def lat(self):
         return self.__latlng[0]
-    
+
     def lng(self):
         return self.__latlng[1]
-    
+
     def non_empty_bounds(self):
         latlng1 = self.__bounds.get_min()
         latlng2 = self.__bounds.get_max()
@@ -157,7 +157,7 @@ class Airport:
                     latlng2[0], latlng2[1],
                     self.__runways,
                     self.__nearby[0], self.__nearby[1], self.__nearby[2])
-    
+
     def to_sql_array(self):
         iata = self.__iata_code
         if iata == self.__ident:
@@ -167,7 +167,7 @@ class Airport:
         latlng2 = self.__bounds.get_max()
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
-        
+
         return [self.__ident, iata, self.__name.decode('utf-8'), self.shorten_type(self.__type),
                     self.__iso_country, self.__iso_region, self.__municipality.decode('utf-8'),
                     latlng1[0], latlng1[1],
@@ -183,7 +183,7 @@ class Airport:
                 self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
-    
+
     def set_nearby(self, nearby):
         self.__nearby = nearby
 
@@ -229,19 +229,19 @@ class AirportsTable:
                 values)
         db.commit()
         print("airports {0}".format(count))
-    
-    
+
+
     def dump_list_html(self, file_name):
         import pycountry
-        
+
         if os.path.isfile(file_name):
             os.remove(file_name)
-        
+
         by_country = {}
         for id, airport in self.__items.iteritems():
             if airport.type() == 'large_airport':
                 country = 'Unkown'
-                if airport.country() == 'KS':
+                if airport.country() == 'KS' or airport.country() == 'XK':
                     country = 'Kosovo'
                 else:
                     country = pycountry.countries.get(alpha2=airport.country()).name
@@ -259,20 +259,20 @@ class AirportsTable:
                 for airport in airports:
                     f.write('<li><a class="airport-link" onclick="javascript:app.jumpTo(\'{0}\');">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
                 f.write('</ul>\n')
-    
-    
+
+
     def check(self):
         for id, airport in self.__items.iteritems():
             if not airport.non_excessive_bounds():
                 print("{0}: bad runway coordinates".format(airport.id()))
-    
+
     def wipe_bad_airports(self):
         remaining = {}
         for id, airport in self.__items.iteritems():
             if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and airport.non_empty_bounds() and airport.non_excessive_bounds():
                 remaining[id] = airport
         self.__items = remaining
-    
+
     def compute_nearby(self):
         helpers = []
         for id, a in self.__items.iteritems():
@@ -282,7 +282,7 @@ class AirportsTable:
             sin_phi = math.sin(phi)
             cos_phi = math.cos(phi)
             helpers.append((a.id(), theta, sin_phi, cos_phi))
-        
+
         for (index, (id1, theta1, sin_phi1, cos_phi1)) in enumerate(helpers):
             print(index, len(helpers))
             distances = []
@@ -291,7 +291,7 @@ class AirportsTable:
                     d = math.acos((sin_phi1 * sin_phi2 * math.cos(theta1 - theta2) + cos_phi1 * cos_phi2))
                     distances.append((id2, d))
             distances = sorted(distances, key=lambda x: x[1])
-            
+
             nearby = []
             for id, d in distances[:3]:
                 nearby.append(id + ":" + self.__items[id].fancy_name())
@@ -370,8 +370,8 @@ class Runway:
     def has_hard_surface(self):
         import re
 
-        return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) is not None    
-        
+        return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) is not None
+
     def to_sql_string(self):
         (he_lat, he_lng) = ('{:.4f}'.format(self.__he_latlng[0]), '{:.4f}'.format(self.__he_latlng[1])) if (self.__he_latlng is not None) else ('', '')
         (le_lat, le_lng) = ('{:.4f}'.format(self.__le_latlng[0]), '{:.4f}'.format(self.__le_latlng[1])) if (self.__le_latlng is not None) else ('', '')
@@ -435,7 +435,7 @@ class RunwaysTable:
 if __name__ == "__main__":
     import urllib
     import os
-    
+
     if not os.path.isfile("airports.csv"):
         print("retrieving http://ourairports.com/data/airports.csv")
         urllib.URLopener().retrieve("http://ourairports.com/data/airports.csv", "airports.csv")
