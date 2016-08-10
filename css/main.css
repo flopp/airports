@@ -41,16 +41,6 @@ a:active {
   opacity: 0.7;
 }
 
-#map-copyright div {
-  padding: 1px 6px 1px 6px;
-  color: rgb(68,68,68);
-  opacity: 1;
-}
-
-#map-copyright a {
-  color: #000;
-}
-
 #container {
   position: absolute;
   left: 0;
@@ -145,8 +135,8 @@ ul {
     position: absolute;
     top: 40px;
     right: 40px;
-    width: 96px;
-    height: 146px;
+    width: 48px;
+    height: 244px;
     z-index:300;
     text-shadow: 0px 0px 4px #000;
     border-radius: 6px;
@@ -180,8 +170,8 @@ ul {
     position:absolute;
     top:100px;
     right:0px;
-    height: 146px;
-    width: 96px;
+    height: 244px;
+    width: 48px;
     z-index:300;
     text-shadow:0px 0px 4px #000;
     border-radius: 6px;
@@ -198,18 +188,11 @@ ul {
   cursor:pointer;
 }
 
-#controls .left-column {
+#controls .column {
   position: absolute;
   width: 48px;
   top: 0px;
-  left: ßpx;
-}
-
-#controls .right-column {
-  position: absolute;
-  width: 48px;
-  top: 0px;
-  left: 48px;
+  left: 0px;
 }
 
 .my-control i {
