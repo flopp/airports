@@ -8,6 +8,13 @@ mkdir -p $DEPLOY/js ;   cp js/* $DEPLOY/js
 mkdir -p $DEPLOY/css ;  cp css/* $DEPLOY/css
 mkdir -p $DEPLOY/data ; cp data/* $DEPLOY/data
 
+if [ -f data/airports.html ] ; then
+    sed -i '/<!-- AIRPORTS -->/ {
+        r data/airports.html
+        g
+    }' $DEPLOY/index.html
+fi
+
 # jquery cookies
 if [ -d ext/jquery-cookie/.git ] ; then
     cd ext/jquery-cookie/
