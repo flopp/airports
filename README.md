@@ -3,13 +3,13 @@ airports_map
 
 Fullscreen satellite map randomly showing the world's airports.
 
-Website: http://airports.fraig.de/
+Website: https://airports.flopp.net/
 
 Some nice airports
 ------------------
-* [KSFO/SFO - San Francisco International Airport](http://airports.fraig.de/#KSFO)
-* [PKMJ/MAJ - Marshall Islands International Airport](http://airports.fraig.de/#PKMJ)
-* [EKCH/CPH - Copenhagen Kastrup Airport](http://airports.fraig.de/#EKCH)
+* [KSFO/SFO - San Francisco International Airport](https://airports.flopp.net/#KSFO)
+* [PKMJ/MAJ - Marshall Islands International Airport](https://airports.flopp.net/#PKMJ)
+* [EKCH/CPH - Copenhagen Kastrup Airport](https://airports.flopp.net/#EKCH)
 
 Features
 --------
