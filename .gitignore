@@ -1,7 +1,3 @@
-deploy
-ext
-scripts/*.csv
-scripts/*.sqlite
-scripts/.idea
-google7caa54246d4da45f.html
-BingSiteAuth.xml
+.deploy
+.local
+config.txt

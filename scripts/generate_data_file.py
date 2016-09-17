@@ -2,7 +2,9 @@
 
 import csv
 import math
-
+import os
+import urllib
+import sys
 
 class Bounds:
     def __init__(self):
@@ -189,6 +191,7 @@ class Airport:
 
 class AirportsTable:
     def __init__(self, file_name):
+        print("-- reading {}".format(file_name))
         self.__fields = None
         self.__items = {}
 
@@ -203,11 +206,13 @@ class AirportsTable:
                     self.__items[airport.id()] = airport
 
     def compute_bounds(self, runways_dict):
+        print("-- computing bounds of airports")
         for id, airport in self.__items.iteritems():
             if id in runways_dict:
                 airport.compute_bounds(runways_dict[id])
 
     def to_sql(self, file_name):
+        print("-- creating {}".format(file_name))
         import sqlite3
 
         if os.path.isfile(file_name):
@@ -232,11 +237,12 @@ class AirportsTable:
 
 
     def dump_list_html(self, file_name):
+        print("-- creating list")
         import pycountry
-
+        
         if os.path.isfile(file_name):
             os.remove(file_name)
-
+        
         by_country = {}
         for id, airport in self.__items.iteritems():
             if airport.type() == 'large_airport':
@@ -259,21 +265,36 @@ class AirportsTable:
                 for airport in airports:
                     f.write('<li><a class="airport-link" onclick="javascript:app.jumpTo(\'{0}\');">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
                 f.write('</ul>\n')
-
-
+    
+    def dump_sitemap(self, file_name):
+        print("-- creating sitemap")
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+        airports = []
+        for _, airport in self.__items.iteritems():
+            if airport.type() == 'large_airport':
+                airports.append(airport)
+        with open(file_name, 'w') as f:
+            for airport in airports:
+                f.write("BASE_URL#{}\n".format(airport.id()))
+    
     def check(self):
+        print("-- checking airport coordinates")
         for id, airport in self.__items.iteritems():
             if not airport.non_excessive_bounds():
-                print("{0}: bad runway coordinates".format(airport.id()))
+                print("   {0}: bad runway coordinates".format(airport.id()))
 
     def wipe_bad_airports(self):
+        print("-- wiping bad airports")
         remaining = {}
         for id, airport in self.__items.iteritems():
             if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and airport.non_empty_bounds() and airport.non_excessive_bounds():
                 remaining[id] = airport
+        print("   {} -> {}".format(len(self.__items), len(remaining)))
         self.__items = remaining
 
     def compute_nearby(self):
+        print("-- computing nearby airports")
         helpers = []
         for id, a in self.__items.iteritems():
             degrees_to_radians = math.pi/180.0
@@ -382,6 +403,7 @@ class Runway:
 
 class RunwaysTable:
     def __init__(self, file_name):
+        print("-- reading {}".format(file_name))
         self.__fields = None
         self.__items = []
 
@@ -408,6 +430,7 @@ class RunwaysTable:
         return d
 
     def to_sql(self, file_name):
+        print("-- creating {}".format(file_name))
         import sqlite3
 
         if os.path.isfile(file_name):
@@ -432,23 +455,34 @@ class RunwaysTable:
         print("runways {0}".format(count))
 
 
-if __name__ == "__main__":
-    import urllib
-    import os
+def download(url, target):
+    if os.path.isfile(target):
+        return
+    d = os.path.dirname(target)
+    if not os.path.isdir(d):
+        print("-- creating dir: {}".format(d))
+        os.mkdir(d)
+    print("-- downloading: {}".format(url))
+    urllib.URLopener().retrieve(url, target)
 
-    if not os.path.isfile("airports.csv"):
-        print("retrieving http://ourairports.com/data/airports.csv")
-        urllib.URLopener().retrieve("http://ourairports.com/data/airports.csv", "airports.csv")
-    if not os.path.isfile("runways.csv"):
-        print("retrieving http://ourairports.com/data/runways.csv")
-        urllib.URLopener().retrieve("http://ourairports.com/data/runways.csv", "runways.csv")
 
-    airports = AirportsTable("airports.csv")
-    runways = RunwaysTable("runways.csv")
+if __name__ == "__main__":    
+    if not os.path.isfile("README.md"):
+        print("not the project's root")
+        sys.exit(1)
+    
+    airports_csv = ".local/airports.csv"
+    runways_csv = ".local/runways.csv"
+    download("http://ourairports.com/data/airports.csv", airports_csv)
+    download("http://ourairports.com/data/runways.csv", runways_csv)
+    
+    airports = AirportsTable(airports_csv)
+    runways = RunwaysTable(runways_csv)
     airports.compute_bounds(runways.to_dict())
     airports.check()
     airports.wipe_bad_airports()
     airports.compute_nearby()
-    airports.dump_list_html('airports.html')
-    airports.to_sql("airports.sqlite")
-    runways.to_sql("runways.sqlite")
+    airports.dump_list_html("data/airports.html")
+    airports.dump_sitemap("data/sitemap.txt")
+    airports.to_sql("data/airports.sqlite")
+    airports.to_sql("data/runways.sqlite")

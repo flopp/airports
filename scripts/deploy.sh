@@ -1,51 +1,55 @@
 #!/bin/bash
 
-#TARGET=flopp@grus.uberspace.de:html/
-TARGET=flopp@95.143.172.223:html/
-DEPLOY=deploy/airports_fraig.de
-mkdir -p $DEPLOY ;      cp index.html api.php sitemap.xml $DEPLOY
+if [ ! -f README.md ] ; then
+    echo "bad working directory"
+    exit 1
+fi
+
+if [ ! -f config.txt ] ; then
+    echo "no config.txt"
+    exit 1
+fi
+source config.txt
+
+DEPLOY=.deploy
+mkdir -p $DEPLOY ;      cp index.html api.php .htaccess data/sitemap.txt $DEPLOY
 mkdir -p $DEPLOY/js ;   cp js/* $DEPLOY/js
 mkdir -p $DEPLOY/css ;  cp css/* $DEPLOY/css
 mkdir -p $DEPLOY/data ; cp data/* $DEPLOY/data
 
-if [ -f data/airports.html ] ; then
-    sed -i '/<!-- AIRPORTS -->/ {
-        r data/airports.html
-        g
-    }' $DEPLOY/index.html
-fi
+LOCAL=.local
+mkdir -p .local
 
 # jquery cookies
-if [ -d ext/jquery-cookie/.git ] ; then
-    cd ext/jquery-cookie/
-    git pull origin master
-    cd -
+if [ -d $LOCAL/jquery-cookie/.git ] ; then
+    (cd $LOCAL/jquery-cookie/ ; git pull origin master)
 else
-    mkdir -p ext
-    cd ext
-    git clone https://github.com/carhartl/jquery-cookie.git
-    cd -
+    git clone https://github.com/carhartl/jquery-cookie.git $LOCAL/jquery-cookie
 fi
-cp ext/jquery-cookie/src/jquery.cookie.js $DEPLOY/js
+cp $LOCAL/jquery-cookie/src/jquery.cookie.js $DEPLOY/js
 
 # history.js
-if [ -d ext/history.js/.git ] ; then
-    cd ext/history.js/
-    git pull origin master
-    cd -
+if [ -d $LOCAL/history.js/.git ] ; then
+    (cd $LOCAL/history.js/ ; git pull origin master)
 else
-    mkdir -p ext
-    cd ext
-    git clone https://github.com/browserstate/history.js.git
-    cd -
+    git clone https://github.com/browserstate/history.js.git $LOCAL/history.js
 fi
-cp ext/history.js/scripts/bundled/html4+html5/jquery.history.js $DEPLOY/js
+cp $LOCAL/history.js/scripts/bundled/html4+html5/jquery.history.js $DEPLOY/js
 
-if [ -f config.txt ] ; then
-  source config.txt
-  sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" $DEPLOY/index.html 
-  sed -i -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" -e "s/GOOGLE_ANALYTICS_ACCOUNT/${GOOGLE_ANALYTICS_ACCOUNT}/g" $DEPLOY/js/main.js
-fi
-sed -i -e "s/TIMESTAMP/$(date +%Y-%m-%dT%H:%M:%S%:z)/g" $DEPLOY/sitemap.xml
+sed -i \
+    -e "s#BASE_URL#${BASE_URL}#g" \
+    -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" \
+    -e "s/GOOGLE_SITE_VERIFICATION/${GOOGLE_SITE_VERIFICATION}/g" \
+    -e "s/BING_SITE_VERIFICATION/${BING_SITE_VERIFICATION}/g" \
+    $DEPLOY/index.html 
+sed -i \
+    -e "s#BASE_URL#${BASE_URL}#g" \
+    $DEPLOY/sitemap.txt
+sed -i \
+    -e "s#BASE_URL#${BASE_URL}#g" \
+    -e "s/GOOGLE_MAPS_API_KEY/${GOOGLE_MAPS_API_KEY}/g" \
+    -e "s/GOOGLE_ANALYTICS_ACCOUNT/${GOOGLE_ANALYTICS_ACCOUNT}/g" \
+    $DEPLOY/js/main.js
 
-scp -C -r $DEPLOY $TARGET
+ssh $SERVER "mkdir -p $TARGET_DIR"
+rsync -avz --progress ${DEPLOY}/* ${DEPLOY}/.htaccess $SERVER:$TARGET_DIR

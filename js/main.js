@@ -13,6 +13,7 @@ $.fn.pressEnter = function(fn) {
 
 var app = {
   init : function() {
+    app.base_url = 'BASE_URL';
     app.loading = false;
     app.load_timeout = -1;
     app.current = null;
@@ -377,11 +378,13 @@ var app = {
     if (app.current) {
       History.setTitle({ title: app.current.get_label() + ' - Random Airports'});
       History.setHash(app.current.get_code(), false);
+      $('link[rel="canonical"]').attr('href', app.base_url + '#' + app.current.get_code());
       $('#label').html(app.current.get_label());
       $('#location').html(app.current.get_location_name());
     } else {
       History.setTitle({ title: 'Random Airports'});
       History.setHash('', false);
+      $('link[rel="canonical"]').attr('href', app.base_url);
       $('#label').html('Random Airports');
       $('#location').html('');
     }
