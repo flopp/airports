@@ -1,7 +1,7 @@
 ---
 - hosts: grus
   vars:
-   - repo: https://github.com/flopp/random_airports.git
+   - repo: https://github.com/flopp/airports_map.git
    - basedir: /home/flopp/projects/airports
   tasks:
    - name: Update from github

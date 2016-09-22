@@ -15,7 +15,8 @@ fi
 
 echo "setting up venv: $TARGET_DIR"
 
-virtualenv -p python3 "$TARGET_DIR"
+
+~/bin/virtualenv -p python3 "$TARGET_DIR"
 
 source "$TARGET_DIR/bin/activate"
 pip3 install flask
