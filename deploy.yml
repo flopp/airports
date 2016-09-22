@@ -9,4 +9,4 @@
    - name: Copy config
      copy: src=./config-production.py dest={{ basedir }}/config.py
    - name: Run post copy script
-     command: {{ basedir }}/scripts/post-copy.sh {{ basedir }}
+     command: "{{ basedir }}/scripts/post-copy.sh"
