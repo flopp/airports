@@ -7,9 +7,9 @@ Website: https://airports.flopp.net/
 
 Some nice airports
 ------------------
-* [KSFO/SFO - San Francisco International Airport](https://airports.flopp.net/#KSFO)
-* [PKMJ/MAJ - Marshall Islands International Airport](https://airports.flopp.net/#PKMJ)
-* [EKCH/CPH - Copenhagen Kastrup Airport](https://airports.flopp.net/#EKCH)
+* [KSFO/SFO - San Francisco International Airport](https://airports.flopp.net/a/KSFO)
+* [PKMJ/MAJ - Marshall Islands International Airport](https://airports.flopp.net/a/PKMJ)
+* [EKCH/CPH - Copenhagen Kastrup Airport](https://airports.flopp.net/a/EKCH)
 
 Features
 --------

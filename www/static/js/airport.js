@@ -4,9 +4,7 @@ function Airport() {
   this.m_name = "";
   this.m_bounds = null;
   this.m_zoom = 14;
-  this.m_country = "";
-  this.m_city = "";
-  this.m_nearby = null;  
+  this.m_location = ""; 
 }
 
 Airport.prototype.m_code = "";
@@ -14,10 +12,7 @@ Airport.prototype.m_iata = "";
 Airport.prototype.m_name = "";
 Airport.prototype.m_bounds = null;
 Airport.prototype.m_zoom = 14;
-Airport.prototype.m_country = "";
-Airport.prototype.m_region = "";
-Airport.prototype.m_city = "";
-Airport.prototype.m_nearby = null;
+Airport.prototype.m_location = "";
 
 Airport.prototype.load_from_json = function(json) {
   this.m_code = json.id;
@@ -28,9 +23,7 @@ Airport.prototype.load_from_json = function(json) {
   this.m_zoom = 14;
   if (type == "M") this.m_zoom = 15;
 
-  this.m_country = json.country;
-  this.m_region = json.region;
-  this.m_city = json.city;
+  this.m_location = json.location;
 
   var latlng0 = new google.maps.LatLng(parseFloat(json.lat1), parseFloat(json.lng1));
   var latlng1 = new google.maps.LatLng(parseFloat(json.lat2), parseFloat(json.lng2));
@@ -41,11 +34,6 @@ Airport.prototype.load_from_json = function(json) {
     this.m_bounds.extend(new google.maps.LatLng(latlng0.lat()-lat_margin, latlng0.lng()-lng_margin));
     this.m_bounds.extend(new google.maps.LatLng(latlng1.lat()+lat_margin, latlng1.lng()+lng_margin));
   }  
-  
-  this.m_nearby = new Array();
-  this.m_nearby.push(json.nearby1);
-  this.m_nearby.push(json.nearby2);
-  this.m_nearby.push(json.nearby3);
 }
 
 Airport.prototype.get_code = function() {
@@ -69,38 +57,9 @@ Airport.prototype.get_zoom = function() {
 }
 
 Airport.prototype.get_label = function() {
-  var code = this.m_code;
-  if (this.m_iata != "" && this.m_iata != code) {
-    code = code + "/" + this.m_iata;
-  }
-  return code + " - " + this.m_name;
+  return this.m_name;
 }
 
 Airport.prototype.get_location_name = function() {
-  var loc = "";
-  
-  if (this.m_city != "") {
-    loc += this.m_city + ", ";
-  } else {
-    loc += "Somewhere in ";
-  }
-  
-  var region = getRegionName(this.m_region);
-  if (region != "") {
-    loc += region;
-    loc += ", ";
-  }
-  
-  var country = getCountryName(this.m_country);
-  if (country != "") {
-    loc += country;
-  } else {
-    loc += this.m_country;
-  }
-  
-  return loc;
-}
-
-Airport.prototype.get_nearby = function() {
-  return this.m_nearby;
+    return this.m_location;
 }

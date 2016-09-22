@@ -109,7 +109,7 @@ ul {
 
 @media (min-width: 800px) {
   #label-container {
-    display: none;
+    display: block;
     z-index: 300;
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
@@ -130,7 +130,7 @@ ul {
   }
 
   #controls {
-    display: none;
+    display: block;
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
     top: 40px;
@@ -145,7 +145,7 @@ ul {
 
 @media (max-width: 799px) {
   #label-container {
-    display: none;
+    display: block;
     z-index:300;
     background-color:rgba(0, 0, 0, 0.3);
     position:absolute;
@@ -165,7 +165,7 @@ ul {
   }
 
   #controls {
-    display: none;
+    display: block;
     background-color:rgba(0, 0, 0, 0.3);
     position:absolute;
     top:100px;

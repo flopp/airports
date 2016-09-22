@@ -1,0 +1,12 @@
+---
+- hosts: grus
+  vars:
+   - repo: https://github.com/flopp/random_airports.git
+   - basedir: /home/flopp/projects/airports
+  tasks:
+   - name: Update from github
+     git: repo={{ repo }} dest={{ basedir }} accept_hostkey=yes
+   - name: Copy config
+     copy: src=./config-production.py dest={{ basedir }}/config.py
+   - name: Run post copy script
+     command: {{ basedir }}/scripts/post-copy.sh {{ basedir }}

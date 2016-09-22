@@ -1,40 +1,29 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-  <title>Random Airports</title>
-  <link rel="canonical" href="BASE_URL" />
-  <meta itemprop="name" content="Random Airports" />
-  <meta name="description" content="Random satellite views of the world's airports.">
-  <meta itemprop="desciption" content="Random satellite views of the world's airports.">
-  <meta name="language" content="english" />
-  <meta http-equiv="language" content="EN">
-  <link rel="image_src" href="img/screenshot.jpg" />
-  <meta itemprop="image" content="img/screenshot.jpg" />
-  <meta property="og:image" content="img/screenshot.jpg" />
-  <link rel="author" href="https://plus.google.com/100782631618812527586" />
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400italic" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&language=en"></script>
-  <script type="text/javascript" src="js/jquery.history.js"></script>
-  <script type="text/javascript" src="js/jquery.cookie.js"></script>
-  <script type="text/javascript" src="js/isocountries.js"></script>
-  <script type="text/javascript" src="js/isoregions.js"></script>
-  <script type="text/javascript" src="js/airports.js"></script>
-  <script type="text/javascript" src="js/main.js"></script>
-  <link type="text/css" rel="stylesheet" href="css/main.css">
-  <meta name="google-site-verification" content="GOOGLE_SITE_VERIFICATION" />
-  <meta name="msvalidate.01" content="BING_SITE_VERIFICATION" />
-  <meta name="yandex-verification" content="YANDEX_SITE_VERIFICATION" />
+    <meta charset="utf-8">
+    <title>{{ airport.name }} [Random Airports]</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    {{ config.META|safe }}
+    <link rel="canonical" href="{{ config.BASE_URL }}/a/{{ airport.id }}" />
+    <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!--<link rel="icon" type="image/png" href="{{ url_for('.static', filename='img/favicon.png') }}" />-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_KEY }}&language=en"></script>
+    <script src="{{ url_for('.static', filename='js/airport.js') }}"></script>
+    <script src="{{ url_for('.static', filename='js/main.js') }}"></script>
 </head>
-
 <body>
+  <div id="label-container">
+    <div id="label">{{ airport.name }}</div>
+    <div id="location">{{ airport.location }}</div>
+  </div>
+
   <div id="container">
     <div id="map"></div>
-  </div>
+  </div>  
   
   <div id="about-overlay" class="overlay">
     <div class="overlay-content">
@@ -49,7 +38,7 @@
         <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
         <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every minute a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
         <li>Click on the <i class="fa fa-search"></i> button in the control panel to search for a specific airport by ICAO code, IATA code, airport name, or location name.</li>
-        <li>Click on the <i class="fa fa-info-circle"></i> button in the control panel to show additional information about the current airport and to open the current view in a variety of external services (e.g. Google Maps, FlightRadar24, etc.).</li>
+        <li>Click on the <i class="fa fa-info-circle"></i> button in the control panel to show additional information about the current airport and to open the current view in a variety of external services (e.g. Google Maps).</li>
         <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
       </ul>
 
@@ -58,15 +47,18 @@
         This app is based on the <a href="https://developers.google.com/maps/" target="_blank">Google Maps API</a>, which on the one hand provides a powerful programming interface for web-based mapping applications, and on the other hand opens access to high quality satellite imagery for places all over the world.
       </p>
       <p>
+        The backend is realized in <a href="https://www.python.org/" target="_blank">Python</a> with the help of the excellent <a href="http://flask.pocoo.org/" target="_blank">Flask</a> micro framework.
+      </p>
+      <p>
         The locations of airports have been imported from the public domain data provided by the aviation enthusiasts at <a href="http://ourairports.com/data/" target="_blank">OurAirports.com</a>. The app displays randomly selected airports of the categories 'large_airport','medium_airport' and 'small_airport' for which runway coordinates are available.
       </p>
       <p>
-        Furthermore, the user interface incorporates icons from <a href="http://fontawesome.io/" target="_blank">Font Awesome</a> and fonts from <a href="http://www.google.com/fonts" target="_blank">Google Fonts</a>.
+        Furthermore, the user interface incorporates icons from <a href="https://fontawesome.io/" target="_blank">Font Awesome</a> and fonts from <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a>.
       </p>
 
       <h2>Author</h2>
       <p>
-        This is brought to you by me, <a href="http://www.florian-pigorsch.de/" target="_blank">Florian Pigorsch</a>.
+        This is brought to you by me, <a href="https://www.florian-pigorsch.de/" target="_blank">Florian Pigorsch</a>.
         Feel free to contact me via <a href="https://google.com/+FlorianPigorsch" target="_blank">Google+</a> or <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
         The source code of this app can be found at <a href="https://github.com/flopp/airports_map" target="_blank">Github</a>.
       </p>
@@ -82,15 +74,8 @@
       <button class="my-btn close-button">Close</button>
     </div>
   </div>
-  
-  
-  <div id="label-container">
-    <div id="label">Random Airports</div>
-    <div id="location"></div>
-  </div>
 
   <div id="message-container"></div>
-
 
   <div id="controls">
     <div class="column">
@@ -101,7 +86,6 @@
       <div class="my-control" id="control-about" title="open about window"><i class="fa fa-2x fa-question-circle"></i></div>
     </div>
   </div>
-
 
   <div id="search-overlay" style="display: none" class="overlay">
     <div class="overlay-content">
@@ -121,39 +105,16 @@
     </div>
   </div>
 
-  <div id="welcome-overlay" class="overlay" style="display: block">
-    <div class="overlay-content">
-      <h1>Random Airports</h1>
-      <p>
-        Enjoy the beauty and variety of the world's airports.
-
-        <ul class="fa-ul">
-          <li><i class="fa-li fa fa-refresh"></i> (or just click the screen): Manually jump to a random airport.</li>
-          <li><i class="fa-li fa fa-play"></i>: Toggle 'autoplay' mode - automatically load a random airport every minute.</li>
-          <li><i class="fa-li fa fa-search"></i>: Search for a specific airport.</li>
-          <li><i class="fa-li fa fa-info-circle"></i>: Show infos about the current airport.</li>
-        </ul>
-      </p>
-      <button class="my-btn close-button">Let's go!</button>
-    </div>
-  </div>
-
-
   <div id="info-overlay" class="overlay">
     <div class="overlay-content">
-      <h1 id="info-label"></h1>
-      <h2 id="info-location"></h2>
+      <h1 id="info-label">{{ airport.name }}</h1>
+      <h2 id="info-location">{{ airport.location }}</h2>
       <p><img id="info-minimap"/></p>
-      <h2>Nearby airports:</h2>
-      <p>
-        <ul id="info-nearby"></ul>
-      </p>
       <h2>Open current view/airport in an external service:</h2>
       <p>
         <ul>
           <li><a class="airport-link" id="open-google-maps">Google Maps</a></li>
           <li><a class="airport-link" id="open-ourairports">OurAirports.com</a></li>
-          <li><a class="airport-link" id="open-flightradar24">FlightRadar24</a></li>
         </ul>
       </p>
       <br />
@@ -163,5 +124,9 @@
     </div>
   </div>
 
+<script>
+$(document).ready(function(){ app.init("{{ config.GOOGLE_MAPS_KEY }}", {{ airport|tojson|safe }}); });
+</script>
+{{ config.BOTTOM|safe }}
 </body>
 </html>

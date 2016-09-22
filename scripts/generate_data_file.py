@@ -1,10 +1,11 @@
-#! /usr/bin/env python
+#!./venv/bin/python3
 
 import csv
 import math
 import os
 import urllib
 import sys
+import pycountry
 
 class Bounds:
     def __init__(self):
@@ -106,7 +107,26 @@ class Airport:
         if self.__iata_code != "" and self.__iata_code != self.__ident:
             code = code + "/" + self.__iata_code
         return code + " - " + self.__name;
-
+    
+    def fancy_location(self):
+        country = None
+        if self.__iso_country == 'KS' or self.__iso_country == 'XK':
+            country = 'Kosovo'
+        else:
+            country = pycountry.countries.get(alpha2=self.__iso_country).name
+        city = self.__municipality
+        
+        if country is None or country == "":
+            if city is None or city == "":
+                return "Unknown Location"
+            else:
+                return city
+        else:
+            if city is None or city == "":
+                return "Somewhere in {}".format(country)
+            else:
+                return "{}, {}".format(city, country)
+    
     def country(self):
         return self.__iso_country
 
@@ -141,42 +161,24 @@ class Airport:
         latlng2 = self.__bounds.get_max()
         d = max(abs(latlng1[0] - latlng2[0]), abs(latlng1[1] - latlng2[1]))
         return d < 0.5
-
-    def to_sql_string(self):
+    
+    def to_csv_string(self):
         iata = self.__iata_code
         if iata == self.__ident:
             iata = ""
-
         latlng1 = self.__bounds.get_min()
         latlng2 = self.__bounds.get_max()
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
-
-        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}",{7},{8},{9},{10},{11},"{12}","{13}","{14}"' \
-            .format(self.__ident, iata, quote(self.__name), self.shorten_type(self.__type),
-                    self.__iso_country, self.__iso_region, quote(self.__municipality),
-                    latlng1[0], latlng1[1],
-                    latlng2[0], latlng2[1],
-                    self.__runways,
-                    self.__nearby[0], self.__nearby[1], self.__nearby[2])
-
-    def to_sql_array(self):
-        iata = self.__iata_code
-        if iata == self.__ident:
-            iata = ""
-
-        latlng1 = self.__bounds.get_min()
-        latlng2 = self.__bounds.get_max()
-        latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
-        latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
-
-        return [self.__ident, iata, self.__name.decode('utf-8'), self.shorten_type(self.__type),
-                    self.__iso_country, self.__iso_region, self.__municipality.decode('utf-8'),
-                    latlng1[0], latlng1[1],
-                    latlng2[0], latlng2[1],
-                    self.__runways,
-                    self.__nearby[0].decode('utf-8'), self.__nearby[1].decode('utf-8'), self.__nearby[2].decode('utf-8')]
-
+        return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
+            self.__ident, 
+            iata, 
+            self.fancy_name(), 
+            self.shorten_type(self.__type),
+            self.fancy_location(),
+            latlng1[0], latlng1[1],
+            latlng2[0], latlng2[1])
+    
     def compute_bounds(self, runways):
         self.__runways = 0
         for runway in runways:
@@ -185,9 +187,6 @@ class Airport:
                 self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
-
-    def set_nearby(self, nearby):
-        self.__nearby = nearby
 
 class AirportsTable:
     def __init__(self, file_name):
@@ -201,122 +200,44 @@ class AirportsTable:
                 if not self.__fields:
                     self.__fields = row
                 else:
-                    airport = Airport()
-                    airport.set_from_array(row)
-                    self.__items[airport.id()] = airport
+                    try:
+                        airport = Airport()
+                        airport.set_from_array(row)
+                        self.__items[airport.id()] = airport
+                    except Exception as e:
+                        print(e)
 
     def compute_bounds(self, runways_dict):
         print("-- computing bounds of airports")
-        for id, airport in self.__items.iteritems():
+        for id, airport in self.__items.items():
             if id in runways_dict:
                 airport.compute_bounds(runways_dict[id])
-
-    def to_sql(self, file_name):
-        print("-- creating {}".format(file_name))
-        import sqlite3
-
-        if os.path.isfile(file_name):
-            os.remove(file_name)
-        db = sqlite3.connect(file_name)
-
-        cur = db.cursor()
-        cur.execute(
-            "CREATE TABLE IF NOT EXISTS airports (id TEXT PRIMARY KEY, iata TEXT, name TEXT, type TEXT, country TEXT, region TEXT, city TEXT, lat1 DECIMAL(9,6), lng1 DECIMAL(9,6), lat2 DECIMAL(9,6), lng2 DECIMAL(9,6), runways INTEGER, nearby1 TEXT, nearby2 TEXT, nearby3 TEXT);")
-        db.commit()
-
-        cur = db.cursor()
-        count = 0
-        for id, airport in self.__items.iteritems():
-            count += 1
-            values = airport.to_sql_array()
-            cur.execute(
-                "INSERT INTO airports (id, iata, name, type, country, region, city, lat1, lng1, lat2, lng2, runways, nearby1, nearby2, nearby3) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-                values)
-        db.commit()
-        print("airports {0}".format(count))
-
-
-    def dump_list_html(self, file_name):
-        print("-- creating list")
+    
+    def dump_csv(self, file_name):
+        print("-- creating csv {}".format(file_name))
         import pycountry
         
         if os.path.isfile(file_name):
             os.remove(file_name)
         
-        by_country = {}
-        for id, airport in self.__items.iteritems():
-            if airport.type() == 'large_airport':
-                country = 'Unkown'
-                if airport.country() == 'KS' or airport.country() == 'XK':
-                    country = 'Kosovo'
-                else:
-                    country = pycountry.countries.get(alpha2=airport.country()).name
-                if country not in by_country:
-                    by_country[country] = [airport]
-                else:
-                    by_country[country].append(airport)
         with open(file_name, 'w') as f:
-            countries = sorted(by_country.keys())
-            for country in countries:
-                airports = by_country[country]
-                airports.sort(key = lambda a: a.name())
-                f.write('<h2>{0}</h2>\n'.format(country))
-                f.write('<ul>\n')
-                for airport in airports:
-                    f.write('<li><a class="airport-link" onclick="javascript:app.jumpTo(\'{0}\');">{1}</a></li>\n'.format(airport.id(), airport.fancy_name()))
-                f.write('</ul>\n')
-    
-    def dump_sitemap(self, file_name):
-        print("-- creating sitemap")
-        if os.path.isfile(file_name):
-            os.remove(file_name)
-        airports = []
-        for _, airport in self.__items.iteritems():
-            if airport.type() == 'large_airport':
-                airports.append(airport)
-        with open(file_name, 'w') as f:
-            for airport in airports:
-                f.write("BASE_URL#{}\n".format(airport.id()))
+            for _, airport in self.__items.items():
+                f.write(airport.to_csv_string())
     
     def check(self):
         print("-- checking airport coordinates")
-        for id, airport in self.__items.iteritems():
+        for id, airport in self.__items.items():
             if not airport.non_excessive_bounds():
                 print("   {0}: bad runway coordinates".format(airport.id()))
 
     def wipe_bad_airports(self):
         print("-- wiping bad airports")
         remaining = {}
-        for id, airport in self.__items.iteritems():
+        for id, airport in self.__items.items():
             if (airport.type() in ["large_airport", "medium_airport", "small_airport"]) and airport.non_empty_bounds() and airport.non_excessive_bounds():
                 remaining[id] = airport
         print("   {} -> {}".format(len(self.__items), len(remaining)))
         self.__items = remaining
-
-    def compute_nearby(self):
-        print("-- computing nearby airports")
-        helpers = []
-        for id, a in self.__items.iteritems():
-            degrees_to_radians = math.pi/180.0
-            phi = (90.0 - a.lat()) * degrees_to_radians
-            theta = a.lng() * degrees_to_radians
-            sin_phi = math.sin(phi)
-            cos_phi = math.cos(phi)
-            helpers.append((a.id(), theta, sin_phi, cos_phi))
-
-        for (index, (id1, theta1, sin_phi1, cos_phi1)) in enumerate(helpers):
-            print(index, len(helpers))
-            distances = []
-            for (id2, theta2, sin_phi2, cos_phi2) in helpers:
-                if id1 != id2:
-                    d = math.acos((sin_phi1 * sin_phi2 * math.cos(theta1 - theta2) + cos_phi1 * cos_phi2))
-                    distances.append((id2, d))
-            distances = sorted(distances, key=lambda x: x[1])
-
-            nearby = []
-            for id, d in distances[:3]:
-                nearby.append(id + ":" + self.__items[id].fancy_name())
-            self.__items[id1].set_nearby(nearby)
 
 class Runway:
     def __init__(self):
@@ -429,31 +350,6 @@ class RunwaysTable:
                 d[runway.airport_id()] = [runway]
         return d
 
-    def to_sql(self, file_name):
-        print("-- creating {}".format(file_name))
-        import sqlite3
-
-        if os.path.isfile(file_name):
-            os.remove(file_name)
-
-        db = sqlite3.connect(file_name)
-
-        cur = db.cursor()
-        cur.execute(
-            "CREATE TABLE IF NOT EXISTS runways (airport_ident TEXT, he_name TEXT, he_lat DECIMAL(9,6), he_lng DECIMAL(9,6), le_name TEXT, le_lat DECIMAL(9,6), le_lng DECIMAL(9,6));")
-        db.commit()
-
-        cur = db.cursor()
-        count = 0
-        for runway in self.__items:
-            if runway.has_coordinates() and runway.has_hard_surface() and not runway.is_closed():
-                count += 1
-                values = runway.to_sql_string()
-                sql = "INSERT INTO runways (airport_ident, he_name, he_lat, he_lng, le_name, le_lat, le_lng) VALUES ({0});".format(values)
-                cur.execute(sql)
-        db.commit()
-        print("runways {0}".format(count))
-
 
 def download(url, target):
     if os.path.isfile(target):
@@ -481,8 +377,4 @@ if __name__ == "__main__":
     airports.compute_bounds(runways.to_dict())
     airports.check()
     airports.wipe_bad_airports()
-    airports.compute_nearby()
-    airports.dump_list_html("data/airports.html")
-    airports.dump_sitemap("data/sitemap.txt")
-    airports.to_sql("data/airports.sqlite")
-    airports.to_sql("data/runways.sqlite")
+    airports.dump_csv("www/data/airports.txt")

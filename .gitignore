@@ -1,3 +1,2 @@
-.deploy
 .local
-config.txt
+config-production.py
