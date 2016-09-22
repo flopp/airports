@@ -17,7 +17,7 @@ class Data:
         for i in self._small:
             ids.append(self._airports[i]["id"])
         return ids
-    
+        
     def get(self, code):
         code = code.strip().upper()
         for airport in self._airports:
@@ -35,6 +35,9 @@ class Data:
             index = random.choice(self._small)
         return self._airports[index]
     
+    def get_random_list(self, count):
+        return random.sample(self._airports, count)
+        
     def search(self, needle):
         needle = needle.strip().upper()
         for airport in self._airports:

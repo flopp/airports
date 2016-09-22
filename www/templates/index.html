@@ -71,6 +71,16 @@
           <li>the <a href="http://googlemapsmania.blogspot.de/2015/01/the-international-airport-slideshow-map.html" target="_blank"><em>Maps Mania</em> blog</a> on 2015/01/03</li>
         </ul>
       </p>
+      
+      <h2>Some Examples</h2>
+      <p>
+        Here's a list of {{ airports|length }} random airports:
+        <ul>
+        {% for a in airports %}
+            <li><a href="/a/{{ a.id }}">{{ a.name }}</a></li>
+        {% endfor %}
+        </ul>
+      </p>
       <button class="my-btn close-button">Close</button>
     </div>
   </div>

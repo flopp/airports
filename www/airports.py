@@ -7,14 +7,14 @@ def init():
     
 @app.route('/')
 def index():
-    return render_template("index.html", airport=app.data.get_random())
+    return render_template("index.html", airport=app.data.get_random(), airports=app.data.get_random_list(10))
 
 @app.route('/a/<code>')
 def show_airport(code):    
     airport = app.data.get(code)
     if airport is None:
         airport = app.data.get_random()
-    return render_template("index.html", airport=airport)
+    return render_template("index.html", airport=airport, airports=app.data.get_random_list(10))
 
 @app.route('/api/random')
 def api_random():

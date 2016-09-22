@@ -304,11 +304,13 @@ var app = {
         $('link[rel="canonical"]').attr('href', app.base_url + '/a/' + app.current.get_code());
         $('#label').html(app.current.get_label());
         $('#location').html(app.current.get_location_name());
+        document.title = app.current.get_label() + " [Random Aiports]";
     } else {
         window.history.replaceState({}, "[Random Aiports]", "/");
         $('link[rel="canonical"]').attr('href', app.base_url);
         $('#label').html('Random Airports');
         $('#location').html('');
+        document.title = "[Random Aiports]";
     }
   },
 
