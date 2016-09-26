@@ -3,7 +3,7 @@
 import csv
 import math
 import os
-import urllib
+import urllib.request
 import sys
 import pycountry
 
@@ -170,14 +170,15 @@ class Airport:
         latlng2 = self.__bounds.get_max()
         latlng1 = ('{:.4f}'.format(latlng1[0]), '{:.4f}'.format(latlng1[1]))
         latlng2 = ('{:.4f}'.format(latlng2[0]), '{:.4f}'.format(latlng2[1]))
-        return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
+        return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.__ident, 
             iata, 
             self.fancy_name(), 
             self.shorten_type(self.__type),
             self.fancy_location(),
             latlng1[0], latlng1[1],
-            latlng2[0], latlng2[1])
+            latlng2[0], latlng2[1],
+            self.__wikipedia_link)
     
     def compute_bounds(self, runways):
         self.__runways = 0
@@ -314,14 +315,6 @@ class Runway:
 
         return re.search('bit|com|con|cop|asp|tar|pem', self.__surface, re.IGNORECASE) is not None
 
-    def to_sql_string(self):
-        (he_lat, he_lng) = ('{:.4f}'.format(self.__he_latlng[0]), '{:.4f}'.format(self.__he_latlng[1])) if (self.__he_latlng is not None) else ('', '')
-        (le_lat, le_lng) = ('{:.4f}'.format(self.__le_latlng[0]), '{:.4f}'.format(self.__le_latlng[1])) if (self.__le_latlng is not None) else ('', '')
-
-        return '"{0}","{1}","{2}","{3}","{4}","{5}","{6}"' \
-            .format(self.__airport_ident, self.__he_ident, he_lat, he_lng, self.__le_ident, le_lat, le_lng)
-
-
 class RunwaysTable:
     def __init__(self, file_name):
         print("-- reading {}".format(file_name))
@@ -359,7 +352,7 @@ def download(url, target):
         print("-- creating dir: {}".format(d))
         os.mkdir(d)
     print("-- downloading: {}".format(url))
-    urllib.URLopener().retrieve(url, target)
+    urllib.request.urlretrieve(url, target)
 
 
 if __name__ == "__main__":    

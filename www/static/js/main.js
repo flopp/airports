@@ -287,6 +287,14 @@ var app = {
     $('#info-location').text(app.current.get_location_name());
     $('#info-minimap').attr("src", "http://maps.googleapis.com/maps/api/staticmap?key=" + app._google_maps_key + "&zoom=2&size=500x300&markers=color:blue|" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6));
     
+    if (app.current.get_wiki_data()) {
+        $('#wiki').removeClass('hidden');
+        $('#wiki_data').text(app.current.get_wiki_data());
+        $('#wiki_url a').attr("href", app.current.get_wiki_url());
+    } else {
+        $('#wiki').addClass('hidden');
+    }
+    
     $('#controls').fadeOut(500);
     $('#label-container').fadeOut(500);
     $('#info-overlay').fadeIn(500);

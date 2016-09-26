@@ -217,6 +217,10 @@ ul {
   cursor: pointer;
 }
 
+.hidden {
+    display: none;
+}
+
 @media (min-width: 800px) {
   .overlay-content {
     position: absolute;

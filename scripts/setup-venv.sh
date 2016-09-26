@@ -15,11 +15,16 @@ fi
 
 echo "setting up venv: $TARGET_DIR"
 
-
-~/bin/virtualenv -p python3 "$TARGET_DIR"
+for VE_BIN in /usr/bin/virtualenv ~/bin/virtualenv ; do
+    if [ -e $VE_BIN ] ; then
+        $VE_BIN -p python3 "$TARGET_DIR"
+        break
+    fi
+done
 
 source "$TARGET_DIR/bin/activate"
 pip3 install flask
 pip3 install flipflop
 pip3 install Flask-Caching
 pip3 install pycountry
+pip3 install wikipedia

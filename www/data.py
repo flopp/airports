@@ -1,5 +1,7 @@
 from www import app
 import random
+import urllib.parse
+import wikipedia
 
 class Data:
     def __init__(self):
@@ -17,12 +19,24 @@ class Data:
         for i in self._small:
             ids.append(self._airports[i]["id"])
         return ids
-        
+    
+    def add_wiki(self, airport):
+        if airport["wiki_data"] is None:
+            if airport["wiki_topic"] is not None:
+                try:
+                    summary = wikipedia.summary(airport["wiki_topic"], sentences=3)
+                    airport["wiki_data"] = summary
+                except:
+                    airport["wiki_data"] = ""
+            else:
+                airport["wiki_data"] = ""
+        return airport
+    
     def get(self, code):
         code = code.strip().upper()
         for airport in self._airports:
             if airport["id"] == code:
-                return airport
+                return self.add_wiki(airport)
         return None
     
     def get_random(self):
@@ -33,7 +47,7 @@ class Data:
             index = random.choice(self._medium)
         else:
             index = random.choice(self._small)
-        return self._airports[index]
+        return self.add_wiki(self._airports[index])
     
     def get_random_list(self, count):
         return random.sample(self._airports, count)
@@ -42,15 +56,15 @@ class Data:
         needle = needle.strip().upper()
         for airport in self._airports:
             if airport["id"].upper() == needle:
-                return airport
+                return self.add_wiki(airport)
             elif airport["iata"].upper() == needle:
-                return airport
+                return self.add_wiki(airport)
         for airport in self._airports:
             if needle in airport["name"].upper():
-                return airport
+                return self.add_wiki(airport)
         for airport in self._airports:
             if needle in airport["location"].upper():
-                return airport
+                return self.add_wiki(airport)
         return None
         
     def load(self, file_name):
@@ -68,7 +82,7 @@ class Data:
                     continue
                 a = line.split('\t')
                 # 0=id/icao 1=iata 2=name 3=type 4=location 5=lat1 6=lng1 7=lat2 8=lng2
-                if len(a) != 9:
+                if len(a) != 9 and len(a) != 10:
                     continue
                 icao = a[0].strip().upper()
                 iata = a[1].strip().upper()
@@ -79,6 +93,13 @@ class Data:
                 lng1 = float(a[6].strip())
                 lat2 = float(a[7].strip())
                 lng2 = float(a[8].strip())
+                wiki_url = None
+                wiki_topic = None
+                if len(a) == 10:
+                    wiki_url = a[9].strip()
+                    if "wikipedia.org/wiki/" in wiki_url:
+                        wiki_topic = wiki_url.split('/')[-1]
+                        wiki_topic = urllib.parse.unquote(wiki_topic)
                 
                 index = len(self._airports)
                 self._lookup[icao] = index
@@ -98,7 +119,10 @@ class Data:
                     "lat1": lat1,
                     "lng1": lng1,
                     "lat2": lat2,
-                    "lng2": lng2})
+                    "lng2": lng2,
+                    "wiki_url": wiki_url,
+                    "wiki_topic": wiki_topic,
+                    "wiki_data": None})
         
         elapsed_time = time.time() - start_time
         print('-- loading time: {}s'.format(elapsed_time))

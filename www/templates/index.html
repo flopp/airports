@@ -26,6 +26,17 @@
       <h1 id="info-label">{{ airport.name }}</h1>
       <h2 id="info-location">{{ airport.location }}</h2>
       <p><img id="info-minimap"/></p>
+      {% if airport.wiki_data|length > 0 %}
+      <div id="wiki">
+      <p id="wiki_data">{{ airport.wiki_data }}</p>
+      <p id="wiki_url">(Airport Infos by <a href="{{ airport.wiki_url }}" target="_blank">Wikipedia</a>)</p>
+      </div>
+      {% else %}
+      <div id="wiki" class="hidden">
+      <p id="wiki_data"></p>
+      <p id="wiki_url">(Infos by <a href="https://wikipedia.org/" target="_blank">Wikipedia</a>)</p>
+      </div>
+      {% endif %}
       <h2>Open current view/airport in an external service:</h2>
       <p>
         <ul>
