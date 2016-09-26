@@ -6,19 +6,38 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     {{ config.META|safe }}
     <link rel="canonical" href="{{ config.BASE_URL }}/a/{{ airport.id }}" />
-    <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ config.BASE_URL }}/static/css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
     <!--<link rel="icon" type="image/png" href="{{ url_for('.static', filename='img/favicon.png') }}" />-->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_KEY }}&language=en"></script>
-    <script src="{{ url_for('.static', filename='js/airport.js') }}"></script>
-    <script src="{{ url_for('.static', filename='js/main.js') }}"></script>
+    <script src="{{ config.BASE_URL }}/static/js/airport.js"></script>
+    <script src="{{ config.BASE_URL }}/static/js/main.js"></script>
 </head>
 <body>
   <div id="label-container">
     <div id="label">{{ airport.name }}</div>
     <div id="location">{{ airport.location }}</div>
+  </div>
+
+  <div id="info-overlay" class="overlay">
+    <div class="overlay-content">
+      <h1 id="info-label">{{ airport.name }}</h1>
+      <h2 id="info-location">{{ airport.location }}</h2>
+      <p><img id="info-minimap"/></p>
+      <h2>Open current view/airport in an external service:</h2>
+      <p>
+        <ul>
+          <li><a class="airport-link" id="open-google-maps">Google Maps</a></li>
+          <li><a class="airport-link" id="open-ourairports">OurAirports.com</a></li>
+        </ul>
+      </p>
+      <br />
+      <p>
+        <button class="my-btn close-button">Close</button>
+      </p>
+    </div>
   </div>
 
   <div id="container">
@@ -109,28 +128,15 @@
       </div>
 
       <div id="search-overlay-direct">
-        <h1>Directly jump to the world's largest airports</h1>
-        <!-- AIRPORTS -->
-      </div>
-    </div>
-  </div>
-
-  <div id="info-overlay" class="overlay">
-    <div class="overlay-content">
-      <h1 id="info-label">{{ airport.name }}</h1>
-      <h2 id="info-location">{{ airport.location }}</h2>
-      <p><img id="info-minimap"/></p>
-      <h2>Open current view/airport in an external service:</h2>
-      <p>
+        <h1>Here's a list of {{ airports|length }} randomly selected airports:</h1>
+        <p>
         <ul>
-          <li><a class="airport-link" id="open-google-maps">Google Maps</a></li>
-          <li><a class="airport-link" id="open-ourairports">OurAirports.com</a></li>
+        {% for a in airports %}
+            <li><a href="/a/{{ a.id }}">{{ a.name }}</a></li>
+        {% endfor %}
         </ul>
-      </p>
-      <br />
-      <p>
-        <button class="my-btn close-button">Close</button>
-      </p>
+        </p>
+      </div>
     </div>
   </div>
 
