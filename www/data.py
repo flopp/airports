@@ -1,5 +1,6 @@
 from www import app
 import random
+import re
 import urllib.parse
 import wikipedia
 
@@ -24,6 +25,7 @@ class Data:
         if airport["wiki_data"] is None:
             if airport["wiki_topic"] is not None:
                 try:
+                    wikipedia.set_lang(airport["wiki_lang"])
                     summary = wikipedia.summary(airport["wiki_topic"], sentences=3)
                     airport["wiki_data"] = summary
                 except:
@@ -94,11 +96,15 @@ class Data:
                 lat2 = float(a[7].strip())
                 lng2 = float(a[8].strip())
                 wiki_url = None
+                wiki_lang = None
                 wiki_topic = None
                 if len(a) == 10:
                     wiki_url = a[9].strip()
-                    if "wikipedia.org/wiki/" in wiki_url:
-                        wiki_topic = wiki_url.split('/')[-1]
+                    rx = re.compile('^https?://(.+)\.wikipedia.org/wiki/(.+)$')
+                    m = rx.match(wiki_url)
+                    if m:
+                        wiki_lang = m.group(1)
+                        wiki_topic = m.group(2).replace('_', ' ')
                         wiki_topic = urllib.parse.unquote(wiki_topic)
                 
                 index = len(self._airports)
@@ -121,6 +127,7 @@ class Data:
                     "lat2": lat2,
                     "lng2": lng2,
                     "wiki_url": wiki_url,
+                    "wiki_lang": wiki_lang,
                     "wiki_topic": wiki_topic,
                     "wiki_data": None})
         
