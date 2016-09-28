@@ -32,3 +32,7 @@ def search():
 @app.route('/sitemap.txt')
 def sitemap():
     return render_template("sitemap.txt", ids=app.data.get_all_ids())
+
+@app.route('/robots.txt')
+def robots():
+    return render_template("robots.txt")
