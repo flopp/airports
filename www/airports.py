@@ -9,6 +9,10 @@ def init():
 def index():
     return render_template("index.html", airport=app.data.get_random(), airports=app.data.get_random_list(10))
 
+@app.route('/a/BASE_URL/a/<code>')
+def show_airport_bad(code):
+    return redirect(url_for('show_airport', code=code))
+    
 @app.route('/a/<code>')
 def show_airport(code):    
     airport = app.data.get(code)
