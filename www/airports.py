@@ -4,6 +4,7 @@ from flask import render_template, url_for, request, redirect, jsonify
 @app.before_first_request
 def init():
     app.data.load(app.root_path + '/data/airports.txt')
+    app.data.load_wikipedia(app.root_path + '/data/wikipedia-articles.txt')
     
 @app.route('/')
 def index():
