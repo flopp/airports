@@ -1,2 +1,4 @@
 .local
 config-production.py
+__pycache__
+venv
