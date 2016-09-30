@@ -26,3 +26,4 @@ pip3 install flipflop
 pip3 install Flask-Caching
 pip3 install pycountry
 pip3 install wikipedia
+pip3 install SPARQLWrapper

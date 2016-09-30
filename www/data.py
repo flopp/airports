@@ -132,28 +132,4 @@ class Data:
                     "wiki_data": None})
         
         elapsed_time = time.time() - start_time
-        print('-- loading time: {}s'.format(elapsed_time))
-    
-    def load_wikipedia(self, file_name):
-        with open(file_name, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                a = line.split('\t')
-                icao = a[0]
-                wiki_url = a[1]
-                rx = re.compile('^https?://(.+)\.wikipedia.org/wiki/(.+)$')
-                m = rx.match(wiki_url)
-                if m is None:
-                    continue
-                wiki_lang = m.group(1)
-                wiki_topic = m.group(2).replace('_', ' ')
-                wiki_topic = urllib.parse.unquote(wiki_topic)
-                if icao not in self._lookup:
-                    continue
-                index = self._lookup[icao]
-                airport = self._airports[index]
-                if airport['wiki_url'] is not None:
-                    continue
-                airport['wiki_url'] = wiki_url
-                airport['wiki_lang'] = wiki_lang
-                airport['wiki_topic'] = wiki_topic                        
+        print('-- loading time: {}s'.format(elapsed_time))           

@@ -1,11 +1,13 @@
 #!./venv/bin/python3
 
 import csv
+import json
 import math
 import os
 import urllib.request
 import sys
 import pycountry
+import SPARQLWrapper
 
 class Bounds:
     def __init__(self):
@@ -188,6 +190,12 @@ class Airport:
                 self.__runways += 1
                 self.__bounds.extend(runway.le_latlng())
                 self.__bounds.extend(runway.he_latlng())
+    
+    def update_wikipedia(self, url):
+        if self.__wikipedia_link is None or self.__wikipedia_link == "":
+            self.__wikipedia_link = url
+            return True
+        return False
 
 class AirportsTable:
     def __init__(self, file_name):
@@ -207,7 +215,16 @@ class AirportsTable:
                         self.__items[airport.id()] = airport
                     except Exception as e:
                         print(e)
-
+    
+    def add_wikipedia(self, articles):
+        print("-- adding wikipedia articles")
+        count = 0
+        for id, airport in self.__items.items():
+            if id in articles:
+                if airport.update_wikipedia(articles[id]):
+                    count += 1
+        print("  -> added articles: {}".format(count))    
+        
     def compute_bounds(self, runways_dict):
         print("-- computing bounds of airports")
         for id, airport in self.__items.items():
@@ -343,14 +360,55 @@ class RunwaysTable:
                 d[runway.airport_id()] = [runway]
         return d
 
+def make_parent_dir(file_name):
+    d = os.path.dirname(file_name)
+    if not os.path.isdir(d):
+        print("-- creating dir: {}".format(d))
+        os.makedirs(d)
+
+def wikipedia_articles(file_name):
+    articles = {}
+    j = None
+    if os.path.isfile(file_name):
+        with open(file_name, 'r', encoding='utf-8') as f:
+            j = json.load(f)
+    else:
+        print("-- querying wikipedia article links")
+        sparql = SPARQLWrapper.SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery("""
+            PREFIX schema: <http://schema.org/>
+            PREFIX wikibase: <http://wikiba.se/ontology#>
+            PREFIX wd: <http://www.wikidata.org/entity/>
+            PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+            SELECT ?cid ?icao ?article WHERE {
+                ?cid wdt:P31 wd:Q1248784 ;
+                wdt:P239 ?icao .
+                OPTIONAL {
+                    ?article schema:about ?cid .
+                    ?article schema:inLanguage "en" .
+                    FILTER (SUBSTR(str(?article), 1, 25) = "https://en.wikipedia.org/")
+                }
+            } 
+            """)
+        sparql.setReturnFormat(SPARQLWrapper.JSON)
+        results = sparql.query().convert()
+        j = results["results"]["bindings"]
+        make_parent_dir(file_name)
+        with open(file_name, 'w', encoding='utf-8') as f:
+            json.dump(j, f)
+    for item in j:
+        if 'icao' not in item:
+            continue
+        icao = item['icao']['value'].upper()
+        if 'article' in item:
+            articles[icao] = item['article']['value']
+    return articles
+
 
 def download(url, target):
     if os.path.isfile(target):
         return
-    d = os.path.dirname(target)
-    if not os.path.isdir(d):
-        print("-- creating dir: {}".format(d))
-        os.mkdir(d)
+    make_parent_dir(target)
     print("-- downloading: {}".format(url))
     urllib.request.urlretrieve(url, target)
 
@@ -360,13 +418,17 @@ if __name__ == "__main__":
         print("not the project's root")
         sys.exit(1)
     
+    
     airports_csv = ".local/airports.csv"
     runways_csv = ".local/runways.csv"
     download("http://ourairports.com/data/airports.csv", airports_csv)
     download("http://ourairports.com/data/runways.csv", runways_csv)
+    wikipedia_json = ".local/wikipedia.json"
+    articles = wikipedia_articles(wikipedia_json)
     
     airports = AirportsTable(airports_csv)
     runways = RunwaysTable(runways_csv)
+    airports.add_wikipedia(articles)
     airports.compute_bounds(runways.to_dict())
     airports.check()
     airports.wipe_bad_airports()
