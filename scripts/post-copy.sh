@@ -7,5 +7,3 @@ mkdir -p ~/fcgi-bin/
 cp ./other/airports.fcgi ~/fcgi-bin/
 ./scripts/kill-server.sh
 ./scripts/setup-venv.sh ~/projects/airports
-
-./scripts/generate_data_file.py
