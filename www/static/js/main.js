@@ -36,26 +36,35 @@ var app = {
     
     // setup event handlers
     google.maps.event.addListener(app.map, 'click', function(event) {
-      app.loadAirport("");
+        ga('send', 'event', 'map', 'click');
+        app.loadAirport("");
     });
 
     google.maps.event.addDomListener(window, 'resize', function() {
-      google.maps.event.trigger(app.map, 'resize');
-      app.fitMap();
+        google.maps.event.trigger(app.map, 'resize');
+        app.fitMap();
     });   
     
     $('#control-about').click(function() {
-      app.openAboutOverlay();
-      });
+        ga('send', 'event', 'sidebar', 'open about');
+        app.openAboutOverlay();
+    });
     $('#control-info').click(function() {
-      app.openInfoOverlay();
-      });
+        ga('send', 'event', 'sidebar', 'open info', app.current.get_code());
+        app.openInfoOverlay();
+    });
+    $('#label-container').click(function() {
+        ga('send', 'event', 'label', 'open info', app.current.get_code());
+        app.openInfoOverlay();
+    });
     $('#control-random').click(function() {
-      app.loadAirport("");
-      });
+        ga('send', 'event', 'sidebar', 'random');
+        app.loadAirport("");
+    });
     $('#control-play').click(function() {
-      app.toggleAutoPlay();
-      });
+        ga('send', 'event', 'sidebar', 'play');
+        app.toggleAutoPlay();
+    });
     
     $('#about-overlay').click(function(event) {
       // don't close info overlay when clicking on a link
@@ -82,33 +91,38 @@ var app = {
     });
     
     $('#info-overlay #open-google-maps').click(function(event){
-      event.stopPropagation();
-      app.openGoogleMaps();
+        ga('send', 'event', 'info', 'google maps', app.current.get_code());
+        event.stopPropagation();
+        app.openGoogleMaps();
     });
     $('#info-overlay #info-minimap').click(function(event){
-      event.stopPropagation();
-      app.openGoogleMaps();
+        ga('send', 'event', 'info', 'mini map', app.current.get_code());
+        event.stopPropagation();
+        app.openGoogleMaps();
     });
     $('#info-overlay #open-ourairports').click(function(event){
-      event.stopPropagation();
-      app.openOurAirports();
+        ga('send', 'event', 'info', 'ourairports', app.current.get_code());
+        event.stopPropagation();
+        app.openOurAirports();
     });
     
     $('#control-search').click(function() {
-      app.showSearch();
+        ga('send', 'event', 'sidebar', 'search');
+        app.showSearch();
     });
     $('#search-overlay-search').click(function(){
-      app.performSearch();
+        app.performSearch();
     });
     $('#search-overlay-query').pressEnter(function(){
-      app.performSearch();
+        app.performSearch();
     });
     $('#search-overlay .close-button').click(function(){
-      app.closeSearch();
+        app.closeSearch();
     });
   },
 
   displayMessage : function(message) {
+      ga('send', 'event', 'map', 'message', message);
     $('#message-container').text(message);
     $('#message-container').fadeIn(500);
     
@@ -150,7 +164,7 @@ var app = {
   performSearch : function() {
     var query = $('#search-overlay-query').val();
     app.closeSearch();
-    
+    ga('send', 'event', 'search', 'query', query);
     $.post("/api/search", { "q": query }, function(data) {
         console.log(data);
       if (typeof(data.airport) !== 'undefined' && data.airport != null) {
@@ -405,6 +419,7 @@ var app = {
     
     app.current = new Airport;
     app.current.load_from_json(json_airport);
+    ga('send', 'event', 'map', 'load', app.current.get_code());
           
     google.maps.event.addListenerOnce(app.map, 'tilesloaded', function(){
         $('#map-buffer').fadeOut(500, function(){ app.onFinishLoading(); });
