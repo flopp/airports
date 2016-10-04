@@ -20,6 +20,7 @@
   <div id="label-container">
     <div id="label">{{ airport.name }}</div>
     <div id="location">{{ airport.location }}</div>
+    <div id="info-button"><i class="fa fa-2x fa-info-circle"></i></div>
   </div>
 
   <div id="info-overlay" class="overlay">
@@ -67,7 +68,7 @@
       <h2>Usage</h2>
       <ul>
         <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
-        <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every minute a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
+        <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every 30 seconds a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
         <li>Click on the <i class="fa fa-search"></i> button in the control panel to search for a specific airport by ICAO code, IATA code, airport name, or location name.</li>
         <li>Click on the <i class="fa fa-info-circle"></i> button in the control panel to show additional information about the current airport and to open the current view in a variety of external services (e.g. Google Maps).</li>
         <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
@@ -116,15 +117,32 @@
     </div>
   </div>
 
+  <div id="onboarding-overlay" class="overlay">
+    <div class="overlay-content">
+      <h1>Random Airports</h1>
+      <p>
+        This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
+      </p>
+
+      <ul>
+        <li>Click on the satellite image or on <i class="fa fa-refresh"></i> to advance to another randomly selected airport.</li>
+        <li>Click on <i class="fa fa-play"></i> start 'auto play' mode (every 30 seconds a random airport is loaded).</li>
+        <li>Click on <i class="fa fa-search"></i> to search for a specific airport.</li>
+        <li>Click on <i class="fa fa-info-circle"></i> to show infos about the current airport.</li>
+      </ul>
+    
+      <button class="my-btn close-button">Let's go!</button>
+    </div>
+  </div>
+  
   <div id="message-container"></div>
 
   <div id="controls">
     <div class="column">
-      <div class="my-control" id="control-random" title="show random airport"><i class="fa fa-2x fa-refresh"></i></div>
-      <div class="my-control" id="control-play" title="toggle auto play"><i class="fa fa-2x fa-play"></i></div>
-      <div class="my-control" id="control-search" title="search airport"><i class="fa fa-2x fa-search"></i></div>
-      <div class="my-control" id="control-info" title="open airport info window"><i class="fa fa-2x fa-info-circle"></i></div>
-      <div class="my-control" id="control-about" title="open about window"><i class="fa fa-2x fa-question-circle"></i></div>
+      <div class="my-control" id="control-random" title="Load a random airport"><i class="fa fa-2x fa-refresh"></i></div>
+      <div class="my-control" id="control-play" title="Toggle 'auto play' (load a random airport every 30 seconds)"><i class="fa fa-2x fa-play"></i></div>
+      <div class="my-control" id="control-search" title="Search for a specific airport"><i class="fa fa-2x fa-search"></i></div>
+      <div class="my-control" id="control-about" title="Show help/infos"><i class="fa fa-2x fa-question-circle"></i></div>
     </div>
   </div>
 

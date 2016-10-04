@@ -49,10 +49,6 @@ var app = {
         ga('send', 'event', 'sidebar', 'open about');
         app.openAboutOverlay();
     });
-    $('#control-info').click(function() {
-        ga('send', 'event', 'sidebar', 'open info', app.current.get_code());
-        app.openInfoOverlay();
-    });
     $('#label-container').click(function() {
         ga('send', 'event', 'label', 'open info', app.current.get_code());
         app.openInfoOverlay();
@@ -119,6 +115,16 @@ var app = {
     $('#search-overlay .close-button').click(function(){
         app.closeSearch();
     });
+    $('#onboarding-overlay').click(function(){
+      app.closeOnboarding();
+    });
+    $('#onboarding-overlay .close-button').click(function(){
+        app.closeOnboarding();
+    });
+    if (app.getCookie('alreadybeenhere') == "") {
+        app.showOnboarding();
+    }
+    app.setCookie('alreadybeenhere', 'yes', 30);
   },
 
   displayMessage : function(message) {
@@ -155,6 +161,19 @@ var app = {
     $('#controls').fadeIn(500);
     $('#label-container').fadeIn(500);
     $('#search-overlay').fadeOut(500);
+  },
+  
+  showOnboarding : function() {
+    app.stopAutoPlay();
+    $('#controls').hide();
+    $('#label-container').hide();
+    $('#onboarding-overlay').show();
+  },
+  
+  closeOnboarding : function() {
+    $('#controls').fadeIn(500);
+    $('#label-container').fadeIn(500);
+    $('#onboarding-overlay').fadeOut(500);
   },
   
   sanitize_query : function(query) {
@@ -244,7 +263,7 @@ var app = {
     }
     app.autoplay_timer = setInterval(function() { 
       app.loadAirport(""); 
-      }, 60 * 1000);
+      }, 30 * 1000);
   },
   
   stopAutoPlay : function() {
@@ -432,5 +451,27 @@ var app = {
   
     app.max_zoom = -1;
     app.fitMap();
+  },
+  
+  setCookie : function(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+  },
+
+  getCookie : function (cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
   },
 };
