@@ -322,7 +322,7 @@ var app = {
     app.stopAutoPlay();
     $('#info-label').text(app.current.get_label());
     $('#info-location').text(app.current.get_location_name());
-    $('#info-minimap').attr("src", "http://maps.googleapis.com/maps/api/staticmap?key=" + app._google_maps_key + "&zoom=2&size=500x300&markers=color:blue|" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6));
+    $('#info-minimap').attr("src", "https://maps.googleapis.com/maps/api/staticmap?key=" + app._google_maps_key + "&zoom=2&size=500x300&markers=color:blue|" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6));
     
     if (app.current.get_wiki_data()) {
         $('#wiki').removeClass('hidden');
