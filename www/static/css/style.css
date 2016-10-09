@@ -131,7 +131,7 @@ ul {
     right: 10px;
     bottom: 10px;
     line-height: 1.3em;
-    font-size: 16px;
+    font-size: 12px;
   }
 
   #location {
@@ -144,10 +144,12 @@ ul {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
     top: 40px;
-    right: 40px;
-    width: 48px;
-    height: 196px;
-    z-index:300;
+    right: 28px;
+    width: 28px;
+    height: 140px;
+    margin: 10px;
+    font-size: 12px;
+    z-index: 300;
     text-shadow: 0px 0px 4px #000;
     border-radius: 6px;
   }
@@ -188,10 +190,12 @@ ul {
     display: block;
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
-    top: 100px;
+    bottom: 28px;
     right: 0px;
-    height: 196px;
-    width: 48px;
+    height: 140px;
+    width: 28px;
+    margin: 10px;
+    font-size: 12px;
     z-index: 300;
     text-shadow: 0px 0px 4px #000;
     border-radius: 6px;
@@ -200,9 +204,9 @@ ul {
 
 .my-control {
   display: inline-block;
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -210,7 +214,7 @@ ul {
 
 #controls .column {
   position: absolute;
-  width: 48px;
+  width: 28px;
   top: 0px;
   left: 0px;
 }
