@@ -5,6 +5,7 @@
     <title>{{ airport.name }} [Random Airports]</title>
     <meta name="description" content="Satellite views of the world's airports.">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes">
     {{ config.META|safe }}
     <link rel="canonical" href="{{ config.BASE_URL }}/a/{{ airport.id }}" />
     <link rel="stylesheet" href="{{ config.BASE_URL }}/static/css/style.css">
@@ -143,6 +144,7 @@
       <div class="my-control" id="control-play" title="Toggle 'auto play' (load a random airport every 30 seconds)"><i class="fa fa-2x fa-play"></i></div>
       <div class="my-control" id="control-search" title="Search for a specific airport"><i class="fa fa-2x fa-search"></i></div>
       <div class="my-control" id="control-about" title="Show help/infos"><i class="fa fa-2x fa-question-circle"></i></div>
+      <div class="my-control" id="control-fullscreen" title="Toogle fullscreen mode"><i class="fa fa-2x fa-arrows-alt"></i></div>
     </div>
   </div>
 

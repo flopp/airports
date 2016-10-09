@@ -49,6 +49,10 @@ var app = {
         ga('send', 'event', 'sidebar', 'open about');
         app.openAboutOverlay();
     });
+    $('#control-fullscreen').click(function() {
+        ga('send', 'event', 'sidebar', 'fullscreen');
+        app.toggleFullScreen();
+    });
     $('#label-container').click(function() {
         ga('send', 'event', 'label', 'open info', app.current.get_code());
         app.openInfoOverlay();
@@ -473,5 +477,19 @@ var app = {
         }
     }
     return "";
+  },
+  
+  toggleFullScreen : function() {
+    var doc = window.document;
+    var docEl = doc.documentElement;
+
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+      requestFullScreen.call(docEl);
+    } else {
+      cancelFullScreen.call(doc);
+    }
   },
 };
