@@ -1,3 +1,5 @@
+/** global: Airport, event, google */
+
 $.fn.pressEnter = function(fn) {  
     return this.each(function() {  
         $(this).bind('enterPress', fn);
@@ -35,7 +37,7 @@ var app = {
     app.loadAirportFromJson(airport_json);
     
     // setup event handlers
-    google.maps.event.addListener(app.map, 'click', function(event) {
+    google.maps.event.addListener(app.map, 'click', function() {
         ga('send', 'event', 'map', 'click');
         app.loadAirport("");
     });
@@ -189,8 +191,7 @@ var app = {
     app.closeSearch();
     ga('send', 'event', 'search', 'query', query);
     $.post("/api/search", { "q": query }, function(data) {
-        console.log(data);
-      if (typeof(data.airport) !== 'undefined' && data.airport != null) {
+      if (data.airport) {
         app.loadAirportFromJson(data.airport);
       } else {
         app.displayMessage('Cannot find airport matching "' + query + '".');
@@ -240,8 +241,10 @@ var app = {
   },
     
   fitMap : function() {
-    if (!app.current) return;
-    
+    if (!app.current) {
+      return;
+    }
+
     google.maps.event.trigger(app.map, 'resize');
     app.map.setCenter(app.current.get_pos());
     
@@ -408,21 +411,19 @@ var app = {
     app.loading = true;
     app.onStartLoading();
 
-    airport_id = app.sanitize_query(airport_id);
-    if (airport_id != "") {
-      console.log("loading " + airport_id + "...");
-      $.get("/api/get/" + airport_id, function(data) {
-        if (typeof(data.airport) !== 'undefined' && typeof(data.airport.id) !== 'undefined') {
+    id = app.sanitize_query(id);
+    if (id != "") {
+      $.get("/api/get/" + id, function(data) {
+        if (data.airport) {
             app.loadAirportFromJson(data.airport);
         } else {
-            app.displayMessage('Error loading requested airport (' + airport_id + '). Loading a random airport instead.');
+            app.displayMessage('Error loading requested airport (' + id + '). Loading a random airport instead.');
             app.current = null;
             app.onFinishLoading();
             app.loadAirport("");
         }
       });
     } else {
-      console.log("loading random airport...");
       $.get("/api/random", function(data) {
         if (typeof(data.airport) !== 'undefined' && typeof(data.airport.id) !== 'undefined') {
             app.loadAirportFromJson(data.airport);
@@ -472,7 +473,7 @@ var app = {
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
         }
-        if (c.indexOf(name) == 0) {
+        if (c.indexOf(name) === 0) {
             return c.substring(name.length, c.length);
         }
     }

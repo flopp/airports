@@ -1,3 +1,5 @@
+/** global: google */
+
 function Airport() {
   this.m_code = "";
   this.m_iata = "";
