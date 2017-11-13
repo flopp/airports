@@ -115,7 +115,7 @@ class Airport:
         if self.__iso_country == 'KS' or self.__iso_country == 'XK':
             country = 'Kosovo'
         else:
-            country = pycountry.countries.get(alpha2=self.__iso_country).name
+            country = pycountry.countries.get(alpha_2=self.__iso_country).name
         city = self.__municipality
         
         if country is None or country == "":
@@ -238,9 +238,12 @@ class AirportsTable:
         if os.path.isfile(file_name):
             os.remove(file_name)
         
+        lines = []
+        for _, airport in self.__items.items():
+            lines.append(airport.to_csv_string())
         with open(file_name, 'w') as f:
-            for _, airport in self.__items.items():
-                f.write(airport.to_csv_string())
+            for line in sorted(lines):
+                f.write(line)
     
     def check(self):
         print("-- checking airport coordinates")
