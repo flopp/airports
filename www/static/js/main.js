@@ -230,7 +230,7 @@ App.performSearch = function () {
         q: query
     }, function (data) {
         if (data.airport) {
-            App.loadAirportFromJson(data.airport);
+            self.loadAirportFromJson(data.airport);
         } else {
             self.displayMessage('Cannot find airport matching "' + query + '".');
         }
@@ -520,11 +520,11 @@ App.loadAirport = function (airport_id) {
     } else {
         $.get("/api/random", function (data) {
             if (data.airport !== undefined && data.airport.id !== undefined) {
-                this.loadAirportFromJson(data.airport);
+                self.loadAirportFromJson(data.airport);
             } else {
-                this.displayMessage('Error loading random airport.');
-                this.current = null;
-                this.onFinishLoading();
+                self.displayMessage('Error loading random airport.');
+                self.current = null;
+                self.onFinishLoading();
             }
         });
     }
