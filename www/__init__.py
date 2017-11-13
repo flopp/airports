@@ -1,6 +1,4 @@
 from flask import Flask
-import www.airports
-import www.data
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -12,4 +10,6 @@ try:
 except ImportError:
     pass
 
+import www.airports
+import www.data
 app.data = data.Data()

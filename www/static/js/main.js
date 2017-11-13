@@ -230,7 +230,7 @@ App.performSearch = function () {
         q: query
     }, function (data) {
         if (data.airport) {
-            self.loadAirportFromJson(data.airport);
+            App.loadAirportFromJson(data.airport);
         } else {
             self.displayMessage('Cannot find airport matching "' + query + '".');
         }
@@ -503,9 +503,10 @@ App.loadAirport = function (airport_id) {
     this.loading = true;
     this.onStartLoading();
 
-    var sanitized_id = this.sanitize_query(airport_id);
+    var self = this,
+        sanitized_id = this.sanitize_query(airport_id);
+
     if (sanitized_id !== "") {
-        var self = this;
         $.get("/api/get/" + sanitized_id, function (data) {
             if (data.airport) {
                 self.loadAirportFromJson(data.airport);
