@@ -29,7 +29,9 @@ Airport.prototype.load_from_json = function(json) {
 
   var type = json.type;
   this.m_zoom = 14;
-  if (type == "M") this.m_zoom = 15;
+  if (type == "M") {
+    this.m_zoom = 15;
+  }
 
   this.m_location = json.location;
 

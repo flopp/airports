@@ -4,8 +4,7 @@ $.fn.pressEnter = function(fn) {
     return this.each(function() {  
         $(this).bind('enterPress', fn);
         $(this).keyup(function(e){
-            if(e.keyCode == 13)
-            {
+            if(e.keyCode == 13) {
               $(this).trigger("enterPress");
             }
         })
@@ -291,13 +290,17 @@ var app = {
   },
   
   openGoogleMaps : function() {
-    if (!app.current) return;
+    if (!app.current) {
+      return;
+    }
     var url = "https://www.google.com/maps/@" + app.map.getCenter().lat().toFixed(6) + "," + app.map.getCenter().lng().toFixed(6) + "," + app.map.getZoom() + "z";
     window.open(url, '_blank');
   },
   
   openOurAirports : function() {
-    if (!app.current) return;
+    if (!app.current) {
+      return;
+    }
     var url = "http://ourairports.com/airports/" + app.current.get_code();
     window.open(url, '_blank');
   },
@@ -411,13 +414,13 @@ var app = {
     app.loading = true;
     app.onStartLoading();
 
-    id = app.sanitize_query(id);
-    if (id != "") {
-      $.get("/api/get/" + id, function(data) {
+    sanitized_id = app.sanitize_query(airport_id);
+    if (sanitized_id != "") {
+      $.get("/api/get/" + sanitized_id, function(data) {
         if (data.airport) {
             app.loadAirportFromJson(data.airport);
         } else {
-            app.displayMessage('Error loading requested airport (' + id + '). Loading a random airport instead.');
+            app.displayMessage('Error loading requested airport (' + sanitized_id + '). Loading a random airport instead.');
             app.current = null;
             app.onFinishLoading();
             app.loadAirport("");
