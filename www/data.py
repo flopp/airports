@@ -4,12 +4,14 @@ import re
 import urllib.parse
 import wikipedia
 
+
 class Data:
     def __init__(self):
         self._airports = []
         self._large = []
         self._medium = []
         self._small = []
+        self._lookup = {}
         
     def get_all_ids(self):
         ids = []
@@ -21,7 +23,8 @@ class Data:
             ids.append(self._airports[i]["id"])
         return ids
     
-    def add_wiki(self, airport):
+    @staticmethod
+    def add_wiki(airport):
         if airport["wiki_data"] is None:
             if airport["wiki_topic"] is not None:
                 try:
@@ -42,7 +45,6 @@ class Data:
         return None
     
     def get_random(self):
-        index = 0
         if random.choice([True, False]):
             index = random.choice(self._large)
         elif random.choice([True, False]):
@@ -89,8 +91,8 @@ class Data:
                 icao = a[0].strip().upper()
                 iata = a[1].strip().upper()
                 name = a[2].strip()
-                type = a[3].strip().upper()
-                loc  = a[4].strip()
+                airport_type = a[3].strip().upper()
+                loc = a[4].strip()
                 lat1 = float(a[5].strip())
                 lng1 = float(a[6].strip())
                 lat2 = float(a[7].strip())
@@ -109,9 +111,9 @@ class Data:
                 
                 index = len(self._airports)
                 self._lookup[icao] = index
-                if type == 'L':
+                if airport_type == 'L':
                     self._large.append(index)
-                elif type == 'M':
+                elif airport_type == 'M':
                     self._medium.append(index)
                 else:
                     self._small.append(index)
@@ -120,7 +122,7 @@ class Data:
                     "id": icao,
                     "iata": iata,
                     "name": name,
-                    "type": type,
+                    "type": airport_type,
                     "location": loc,
                     "lat1": lat1,
                     "lng1": lng1,

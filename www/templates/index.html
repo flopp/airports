@@ -175,7 +175,7 @@
   </div>
 
 <script>
-$(document).ready(function(){ app.init("{{ config.GOOGLE_MAPS_KEY }}", {{ airport|tojson|safe }}); });
+$(document).ready(function(){ App.init("{{ config.GOOGLE_MAPS_KEY }}", {{ airport|tojson|safe }}); });
 </script>
 {{ config.BOTTOM|safe }}
 </body>
