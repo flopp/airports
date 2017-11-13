@@ -414,7 +414,7 @@ var app = {
     app.loading = true;
     app.onStartLoading();
 
-    sanitized_id = app.sanitize_query(airport_id);
+    var sanitized_id = app.sanitize_query(airport_id);
     if (sanitized_id != "") {
       $.get("/api/get/" + sanitized_id, function(data) {
         if (data.airport) {
