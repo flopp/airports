@@ -18,167 +18,171 @@
     <script src="{{ config.BASE_URL }}/static/js/main.js"></script>
 </head>
 <body>
-  <div id="label-container">
-    <div id="label">{{ airport.name }}</div>
-    <div id="location">{{ airport.location }}</div>
-    <div id="info-button"><i class="fa fa-2x fa-info-circle"></i></div>
-  </div>
+    <div id="label-container">
+        <div id="label">{{ airport.name }}</div>
+        <div id="location">{{ airport.location }}</div>
+        <div id="info-button"><i class="fa fa-2x fa-info-circle"></i></div>
+    </div>
 
-  <div id="info-overlay" class="overlay">
-    <div class="overlay-content">
-      <h1 id="info-label">{{ airport.name }}</h1>
-      <h2 id="info-location">{{ airport.location }}</h2>
-      <p>
-        <div id="info-minimap">
-          <div id="info-minimap-marker"></div>
+    <div id="info-overlay" class="overlay">
+        <div class="overlay-content">
+            <h1 id="info-label">{{ airport.name }}</h1>
+            <h2 id="info-location">{{ airport.location }}</h2>
+            <p>
+                <div id="info-minimap">
+                    <div id="info-minimap-marker"></div>
+                </div>
+{% if airport.wiki_data|length > 0 %}
+                <div id="wiki">
+                    <p id="wiki_data">{{ airport.wiki_data }}</p>
+                    <p id="wiki_url">(Airport Infos by <a href="{{ airport.wiki_url }}" target="_blank">Wikipedia</a>)</p>
+                </div>
+{% else %}
+                <div id="wiki" class="hidden">
+                    <p id="wiki_data"></p>
+                    <p id="wiki_url">(Infos by <a href="https://wikipedia.org/" target="_blank">Wikipedia</a>)</p>
+                </div>
+{% endif %}
+            </p>
+            <h2>Open current view/airport in an external service:</h2>
+            <p>
+                <ul>
+                    <li><a class="airport-link" id="open-google-maps">Google Maps</a></li>
+                    <li><a class="airport-link" id="open-ourairports">OurAirports.com</a></li>
+                </ul>
+            </p>
+            <br />
+            <p>
+                <button class="my-btn close-button">Close</button>
+            </p>
         </div>
-      {% if airport.wiki_data|length > 0 %}
-      <div id="wiki">
-      <p id="wiki_data">{{ airport.wiki_data }}</p>
-      <p id="wiki_url">(Airport Infos by <a href="{{ airport.wiki_url }}" target="_blank">Wikipedia</a>)</p>
-      </div>
-      {% else %}
-      <div id="wiki" class="hidden">
-      <p id="wiki_data"></p>
-      <p id="wiki_url">(Infos by <a href="https://wikipedia.org/" target="_blank">Wikipedia</a>)</p>
-      </div>
-      {% endif %}
-      <h2>Open current view/airport in an external service:</h2>
-      <p>
-        <ul>
-          <li><a class="airport-link" id="open-google-maps">Google Maps</a></li>
-          <li><a class="airport-link" id="open-ourairports">OurAirports.com</a></li>
-        </ul>
-      </p>
-      <br />
-      <p>
-        <button class="my-btn close-button">Close</button>
-      </p>
     </div>
-  </div>
 
-  <div id="container">
-    <div id="map"></div>
-  </div>  
+    <div id="container">
+        <div id="map"></div>
+    </div>  
   
-  <div id="about-overlay" class="overlay">
-    <div class="overlay-content">
-      <h1>Random Airports</h1>
-      <p>
-        This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
-      </p>
+    <div id="about-overlay" class="overlay">
+        <div class="overlay-content">
+            <h1>Random Airports</h1>
+            <p>
+                This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
+            </p>
 
-      <h2>Usage</h2>
-      <ul>
-        <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
-        <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every 30 seconds a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
-        <li>Click on the <i class="fa fa-search"></i> button in the control panel to search for a specific airport by ICAO code, IATA code, airport name, or location name.</li>
-        <li>Click on the <i class="fa fa-info-circle"></i> button in the control panel to show additional information about the current airport and to open the current view in a variety of external services (e.g. Google Maps).</li>
-        <li>Click on the <i class="fa fa-expand"></i> button in the control panel to toggle fullscreen mode.</li>
-        <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
-      </ul>
+            <h2>Usage</h2>
+            <ul>
+                <li>Click on the satellite image or on the <i class="fa fa-refresh"></i> button in the control panel to advance to another randomly selected airport.</li>
+                <li>Click on the <i class="fa fa-play"></i> button in the control panel to start auto play mode (every 30 seconds a random airport is loaded); Click on the <i class="fa fa-pause"></i> button to stop the auto play mode.</li>
+                <li>Click on the <i class="fa fa-search"></i> button in the control panel to search for a specific airport by ICAO code, IATA code, airport name, or location name.</li>
+                <li>Click on the <i class="fa fa-info-circle"></i> button in the control panel to show additional information about the current airport and to open the current view in a variety of external services (e.g. Google Maps).</li>
+                <li>Click on the <i class="fa fa-expand"></i> button in the control panel to toggle fullscreen mode.</li>
+                <li>Unlike other mapping websites, it is not possible to change the view by panning it around with the mouse or to change the zoom factor.</li>
+            </ul>
 
-      <h2>Technologies and Data Sources</h2>
-      <p>
-        This app is based on the <a href="https://developers.google.com/maps/" target="_blank">Google Maps API</a>, which on the one hand provides a powerful programming interface for web-based mapping applications, and on the other hand opens access to high quality satellite imagery for places all over the world.
-      </p>
-      <p>
-        The backend is realized in <a href="https://www.python.org/" target="_blank">Python</a> with the help of the excellent <a href="http://flask.pocoo.org/" target="_blank">Flask</a> micro framework.
-      </p>
-      <p>
-        The locations of airports have been imported from the public domain data provided by the aviation enthusiasts at <a href="http://ourairports.com/data/" target="_blank">OurAirports.com</a>. The app displays randomly selected airports of the categories 'large_airport','medium_airport' and 'small_airport' for which runway coordinates are available.
-      </p>
-      <p>
-        Furthermore, the user interface incorporates icons from <a href="https://fontawesome.io/" target="_blank">Font Awesome</a> and fonts from <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a>.
-      </p>
+            <h2>Technologies and Data Sources</h2>
+            <p>
+                This app is based on the <a href="https://developers.google.com/maps/" target="_blank">Google Maps API</a>, which on the one hand provides a powerful programming interface for web-based mapping applications, and on the other hand opens access to high quality satellite imagery for places all over the world.
+            </p>
+            <p>
+                The backend is realized in <a href="https://www.python.org/" target="_blank">Python</a> with the help of the excellent <a href="http://flask.pocoo.org/" target="_blank">Flask</a> micro framework.
+            </p>
+            <p>
+                The locations of airports have been imported from the public domain data provided by the aviation enthusiasts at <a href="http://ourairports.com/data/" target="_blank">OurAirports.com</a>. The app displays randomly selected airports of the categories 'large_airport','medium_airport' and 'small_airport' for which runway coordinates are available.
+            </p>
+            <p>
+                Furthermore, the user interface incorporates icons from <a href="https://fontawesome.io/" target="_blank">Font Awesome</a> and fonts from <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a>.
+            </p>
 
-      <h2>Author</h2>
-      <p>
-        This is brought to you by me, <a href="https://www.florian-pigorsch.de/" target="_blank">Florian Pigorsch</a>.
-        Feel free to contact me via <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
-        The source code of this app can be found at <a href="https://github.com/flopp/airports_map" target="_blank">Github</a>.
-      </p>
-      
-      <h2>Backlinks</h2>
-      <p>
-        <em>Random Airports</em> has been featured on several websites including
-        <ul>
-          <li>the <a href="http://avgeekweekly.com/issues/15" target="_blank"><em>AvGeek Weekly Newsletter</em></a> on 2015/01/16,</li>
-          <li>the <a href="http://googlemapsmania.blogspot.de/2015/01/the-international-airport-slideshow-map.html" target="_blank"><em>Maps Mania</em> blog</a> on 2015/01/03</li>
-        </ul>
-      </p>
-      
-      <h2>Some Examples</h2>
-      <p>
-        Here's a list of {{ airports|length }} random airports:
-        <ul>
-        {% for a in airports %}
-            <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
-        {% endfor %}
-        </ul>
-      </p>
-      <button class="my-btn close-button">Close</button>
+            <h2>Author</h2>
+            <p>
+                This is brought to you by me, <a href="https://www.florian-pigorsch.de/" target="_blank">Florian Pigorsch</a>.
+                Feel free to contact me via <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
+                The source code of this app can be found at <a href="https://github.com/flopp/airports_map" target="_blank">Github</a>.
+            </p>
+
+            <h2>Backlinks</h2>
+            <p>
+                <em>Random Airports</em> has been featured on several websites including
+                <ul>
+                    <li>the <a href="http://avgeekweekly.com/issues/15" target="_blank"><em>AvGeek Weekly Newsletter</em></a> on 2015/01/16,</li>
+                    <li>the <a href="http://googlemapsmania.blogspot.de/2015/01/the-international-airport-slideshow-map.html" target="_blank"><em>Maps Mania</em> blog</a> on 2015/01/03</li>
+                </ul>
+            </p>
+
+            <h2>Some Examples</h2>
+            <p>
+                Here's a list of {{ airports|length }} random airports:
+                <ul>
+{% for a in airports %}
+                    <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
+{% endfor %}
+                </ul>
+            </p>
+            <button class="my-btn close-button">Close</button>
+        </div>
     </div>
-  </div>
 
-  <div id="onboarding-overlay" class="overlay">
-    <div class="overlay-content">
-      <h1>Random Airports</h1>
-      <p>
-        This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
-      </p>
+    <div id="onboarding-overlay" class="overlay">
+        <div class="overlay-content">
+            <h1>Random Airports</h1>
+            <p>
+                This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
+            </p>
 
-      <ul>
-        <li>Click on the satellite image or on <i class="fa fa-refresh"></i> to advance to another randomly selected airport.</li>
-        <li>Click on <i class="fa fa-play"></i> start 'auto play' mode (every 30 seconds a random airport is loaded).</li>
-        <li>Click on <i class="fa fa-search"></i> to search for a specific airport.</li>
-        <li>Click on <i class="fa fa-info-circle"></i> to show infos about the current airport.</li>
-        <li>Click on <i class="fa fa-expand"></i> to toggle fullscreen mode.</li>
-      </ul>
-    
-      <button class="my-btn close-button">Let's go!</button>
+            <ul>
+                <li>Click on the satellite image or on <i class="fa fa-refresh"></i> to advance to another randomly selected airport.</li>
+                <li>Click on <i class="fa fa-play"></i> start 'auto play' mode (every 30 seconds a random airport is loaded).</li>
+                <li>Click on <i class="fa fa-search"></i> to search for a specific airport.</li>
+                <li>Click on <i class="fa fa-info-circle"></i> to show infos about the current airport.</li>
+                <li>Click on <i class="fa fa-expand"></i> to toggle fullscreen mode.</li>
+            </ul>
+
+            <button class="my-btn close-button">Let's go!</button>
+        </div>
     </div>
-  </div>
   
-  <div id="message-container"></div>
+    <div id="message-container"></div>
 
-  <div id="controls">
-    <div class="column">
-      <div class="my-control" id="control-random" title="Load a random airport"><i class="fa fa-2x fa-refresh"></i></div>
-      <div class="my-control" id="control-play" title="Toggle 'auto play' (load a random airport every 30 seconds)"><i class="fa fa-2x fa-play"></i></div>
-      <div class="my-control" id="control-search" title="Search for a specific airport"><i class="fa fa-2x fa-search"></i></div>
-      <div class="my-control" id="control-about" title="Show help/infos"><i class="fa fa-2x fa-question-circle"></i></div>
-      <div class="my-control" id="control-fullscreen" title="Toogle fullscreen mode"><i class="fa fa-2x fa-expand"></i></div>
+    <div id="controls">
+        <div class="column">
+            <div class="my-control" id="control-random" title="Load a random airport"><i class="fa fa-2x fa-refresh"></i></div>
+            <div class="my-control" id="control-play" title="Toggle 'auto play' (load a random airport every 30 seconds)"><i class="fa fa-2x fa-play"></i></div>
+            <div class="my-control" id="control-search" title="Search for a specific airport"><i class="fa fa-2x fa-search"></i></div>
+            <div class="my-control" id="control-about" title="Show help/infos"><i class="fa fa-2x fa-question-circle"></i></div>
+            <div class="my-control" id="control-fullscreen" title="Toogle fullscreen mode"><i class="fa fa-2x fa-expand"></i></div>
+        </div>
     </div>
-  </div>
 
-  <div id="search-overlay" style="display: none" class="overlay">
-    <div class="overlay-content">
-      <h1>Search for airports</h1>
-      <div class="overlay-hint">You can search for ICAO-codes (4-letter airport codes, e.g. 'KSFO'), IATA-codes (3-letter airport codes, e.g. 'SFO'), airport and location names (e.g. 'San Francisco'). <br/>
-      Search queries containing multiple words and/or non-alphanumeric characters may be problematic - try to keep your query simple (e.g. prefer 'Helsinki' to 'Helsinki Airport')!</div>
-      <input type="text" name="search-overlay-query" id="search-overlay-query" placeholder="Search term">
-      <div id="search-overlay-buttons">
-        <button class="my-btn" id="search-overlay-search">Search</button>
-        <button class="my-btn close-button">Close</button>
-      </div>
+    <div id="search-overlay" style="display: none" class="overlay">
+        <div class="overlay-content">
+            <h1>Search for airports</h1>
+            <div class="overlay-hint">
+                You can search for ICAO-codes (4-letter airport codes, e.g. 'KSFO'), IATA-codes (3-letter airport codes, e.g. 'SFO'), airport and location names (e.g. 'San Francisco').
+                <br/>
+                Search queries containing multiple words and/or non-alphanumeric characters may be problematic - try to keep your query simple (e.g. prefer 'Helsinki' to 'Helsinki Airport')!
+            </div>
+            <input type="text" name="search-overlay-query" id="search-overlay-query" placeholder="Search term">
+            <div id="search-overlay-buttons">
+                <button class="my-btn" id="search-overlay-search">Search</button>
+                <button class="my-btn close-button">Close</button>
+            </div>
 
-      <div id="search-overlay-direct">
-        <h1>Here's a list of {{ airports|length }} randomly selected airports:</h1>
-        <p>
-        <ul>
-        {% for a in airports %}
-            <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
-        {% endfor %}
-        </ul>
-        </p>
-      </div>
+            <div id="search-overlay-direct">
+                <h1>Here's a list of {{ airports|length }} randomly selected airports:</h1>
+                <p>
+                    <ul>
+{% for a in airports %}
+                        <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
+{% endfor %}
+                    </ul>
+                </p>
+            </div>
+        </div>
     </div>
-  </div>
 
 <script>
 $(document).ready(() => {
-    const app = App("{{ config.GOOGLE_MAPS_KEY }}", {{ airport|tojson|safe }});
+    const app = new App("{{ config.GOOGLE_MAPS_KEY }}", {{ airport|tojson|safe }});
 });
 </script>
 {{ config.BOTTOM|safe }}
