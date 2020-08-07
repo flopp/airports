@@ -245,13 +245,13 @@ class App {
         };
         var ZOOM_MAX = 21;
 
-        latRad = (lat) => {
+        function latRad(lat) {
             var sin = Math.sin(lat * Math.PI / 180);
             var radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
             return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
         };
 
-        zoom = (mapPx, worldPx, fraction) => {
+        function zoom(mapPx, worldPx, fraction) {
             return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
         };
 
