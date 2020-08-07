@@ -7,10 +7,10 @@
 
 $.fn.pressEnter = function (fn) {
     'use strict';
-    return this.each(function () {
+    return this.each(() => {
         $(this).bind('enterPress', fn);
-        $(this).keyup(function (e) {
-            if (e.keyCode === 13) {
+        $(this).keyup((event) => {
+            if (event.keyCode === 13) {
                 $(this).trigger("enterPress");
             }
         });
@@ -19,7 +19,7 @@ $.fn.pressEnter = function (fn) {
 
 var App = {};
 
-App.init = function (google_maps_key, airport_json) {
+App.init = (google_maps_key, airport_json) => {
     'use strict';
     var self = this;
 
@@ -54,38 +54,38 @@ App.init = function (google_maps_key, airport_json) {
     this.loadAirportFromJson(airport_json);
 
     // setup event handlers
-    google.maps.event.addListener(this.map, 'click', function () {
-        ///ga('send', 'event', 'map', 'click');
+    google.maps.event.addListener(this.map, 'click', () => {
+        self.track('map', 'click');
         self.loadAirport("");
     });
 
-    google.maps.event.addDomListener(window, 'resize', function () {
+    google.maps.event.addDomListener(window, 'resize', () => {
         google.maps.event.trigger(self.map, 'resize');
         self.fitMap();
     });
 
-    $('#control-about').click(function () {
-        ///ga('send', 'event', 'sidebar', 'open about');
+    $('#control-about').click(() => {
+        self.track('sidebar', 'open about');
         self.openAboutOverlay();
     });
-    $('#control-fullscreen').click(function () {
-        ///ga('send', 'event', 'sidebar', 'fullscreen');
+    $('#control-fullscreen').click(() => {
+        self.track('sidebar', 'fullscreen');
         self.toggleFullScreen();
     });
-    $('#label-container').click(function () {
-        ///ga('send', 'event', 'label', 'open info', self.current.get_icao());
+    $('#label-container').click(() => {
+        self.track('label', 'open info', self.current.get_icao());
         self.openInfoOverlay();
     });
-    $('#control-random').click(function () {
-        ///ga('send', 'event', 'sidebar', 'random');
+    $('#control-random').click(() => {
+        self.track('sidebar', 'random');
         self.loadAirport("");
     });
-    $('#control-play').click(function () {
-        ///ga('send', 'event', 'sidebar', 'play');
+    $('#control-play').click(() => {
+        self.track('sidebar', 'play');
         self.toggleAutoPlay();
     });
 
-    $('#about-overlay').click(function (event) {
+    $('#about-overlay').click((event) => {
         // don't close info overlay when clicking on a link
         if (event.target && event.target.tagName === 'A') {
             event.stopPropagation();
@@ -93,55 +93,55 @@ App.init = function (google_maps_key, airport_json) {
         }
         self.closeAboutOverlay();
     });
-    $('#about-overlay .close-button').click(function (event) {
+    $('#about-overlay .close-button').click((event) => {
         event.stopPropagation();
         self.closeAboutOverlay();
     });
 
-    $('#message-container').click(function () {
+    $('#message-container').click(() => {
         self.closeMessage();
     });
 
-    $('#info-overlay').click(function () {
+    $('#info-overlay').click(() => {
         self.closeInfoOverlay();
     });
-    $('#info-overlay .close-button').click(function () {
+    $('#info-overlay .close-button').click(() => {
         self.closeInfoOverlay();
     });
 
-    $('#info-overlay #open-google-maps').click(function (event) {
-        ///ga('send', 'event', 'info', 'google maps', self.current.get_icao());
+    $('#info-overlay #open-google-maps').click((event) => {
+        self.track('info', 'google maps', self.current.get_icao());
         event.stopPropagation();
         self.openGoogleMaps();
     });
-    $('#info-overlay #info-minimap').click(function (event) {
-        ///ga('send', 'event', 'info', 'mini map', self.current.get_icao());
+    $('#info-overlay #info-minimap').click((event) => {
+        self.track('info', 'mini map', self.current.get_icao());
         event.stopPropagation();
         self.openGoogleMaps();
     });
-    $('#info-overlay #open-ourairports').click(function (event) {
-        ///ga('send', 'event', 'info', 'ourairports', self.current.get_icao());
+    $('#info-overlay #open-ourairports').click((event) => {
+        self.track('info', 'ourairports', self.current.get_icao());
         event.stopPropagation();
         self.openOurAirports();
     });
 
-    $('#control-search').click(function () {
-        ///ga('send', 'event', 'sidebar', 'search');
+    $('#control-search').click(() => {
+        self.track('sidebar', 'search');
         self.showSearch();
     });
-    $('#search-overlay-search').click(function () {
+    $('#search-overlay-search').click(() => {
         self.performSearch();
     });
-    $('#search-overlay-query').pressEnter(function () {
+    $('#search-overlay-query').pressEnter(() => {
         self.performSearch();
     });
-    $('#search-overlay .close-button').click(function () {
+    $('#search-overlay .close-button').click(() => {
         self.closeSearch();
     });
-    $('#onboarding-overlay').click(function () {
+    $('#onboarding-overlay').click(() => {
         self.closeOnboarding();
     });
-    $('#onboarding-overlay .close-button').click(function () {
+    $('#onboarding-overlay .close-button').click(() => {
         self.closeOnboarding();
     });
     if (self.getCookie('alreadybeenhere') === "") {
@@ -150,24 +150,24 @@ App.init = function (google_maps_key, airport_json) {
     self.setCookie('alreadybeenhere', 'yes', 30);
 };
 
-App.displayMessage = function (message) {
+App.displayMessage = (message) => {
     'use strict';
 
     var self = this;
 
-    ///ga('send', 'event', 'map', 'message', message);
+    this.track('map', 'message', message);
     $('#message-container').text(message);
     $('#message-container').fadeIn(500);
 
     if (this.hide_message_timer) {
         clearInterval(this.hide_message_timer);
     }
-    this.hide_message_timer = setInterval(function () {
+    this.hide_message_timer = setInterval(() => {
         self.closeMessage();
     }, 10 * 1000);
 };
 
-App.closeMessage = function () {
+App.closeMessage = () => {
     'use strict';
 
     $('#message-container').fadeOut(500);
@@ -177,7 +177,7 @@ App.closeMessage = function () {
     this.hide_message_timer = null;
 };
 
-App.showSearch = function () {
+App.showSearch = () => {
     'use strict';
 
     this.stopAutoPlay();
@@ -188,7 +188,7 @@ App.showSearch = function () {
     $('#search-overlay-query').focus();
 };
 
-App.closeSearch = function () {
+App.closeSearch = () => {
     'use strict';
 
     $('#controls').fadeIn(500);
@@ -196,7 +196,7 @@ App.closeSearch = function () {
     $('#search-overlay').fadeOut(500);
 };
 
-App.showOnboarding = function () {
+App.showOnboarding = () => {
     'use strict';
 
     this.stopAutoPlay();
@@ -205,7 +205,7 @@ App.showOnboarding = function () {
     $('#onboarding-overlay').show();
 };
 
-App.closeOnboarding = function () {
+App.closeOnboarding = () => {
     'use strict';
 
     $('#controls').fadeIn(500);
@@ -213,22 +213,22 @@ App.closeOnboarding = function () {
     $('#onboarding-overlay').fadeOut(500);
 };
 
-App.sanitize_query = function (query) {
+App.sanitize_query = (query) => {
     'use strict';
 
     return query.trim().replace(/\s+/g, ' ').toUpperCase().replace(/[^A-Za-z0-9\-\ ]/g, '');
 };
 
-App.performSearch = function () {
+App.performSearch = () => {
     'use strict';
 
     var self = this,
         query = $('#search-overlay-query').val();
     this.closeSearch();
-    ///ga('send', 'event', 'search', 'query', query);
+    this.track('search', 'query', query);
     $.post("/api/search", {
         q: query
-    }, function (data) {
+    }, (data) => {
         if (data.airport) {
             self.loadAirportFromJson(data.airport);
         } else {
@@ -237,7 +237,7 @@ App.performSearch = function () {
     });
 };
 
-App.getBoundsZoomLevel = function (bounds) {
+App.getBoundsZoomLevel = (bounds) => {
     'use strict';
 
     var WORLD_DIM = {
@@ -246,15 +246,15 @@ App.getBoundsZoomLevel = function (bounds) {
     };
     var ZOOM_MAX = 21;
 
-    function latRad(lat) {
+    latRad = (lat) => {
         var sin = Math.sin(lat * Math.PI / 180);
         var radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
         return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
-    }
+    };
 
-    function zoom(mapPx, worldPx, fraction) {
+    zoom = (mapPx, worldPx, fraction) => {
         return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
-    }
+    };
 
     var ne = bounds.getNorthEast();
     var sw = bounds.getSouthWest();
@@ -272,7 +272,7 @@ App.getBoundsZoomLevel = function (bounds) {
     return Math.min(latZoom, lngZoom, ZOOM_MAX);
 };
 
-App.adjustZoom = function () {
+App.adjustZoom = () => {
     'use strict';
 
     var needed_zoom = this.current.get_zoom();
@@ -287,7 +287,7 @@ App.adjustZoom = function () {
     }
 };
 
-App.fitMap = function () {
+App.fitMap = () => {
     'use strict';
 
     if (!this.current) {
@@ -299,7 +299,7 @@ App.fitMap = function () {
 
     if (this.max_zoom < 0) {
         var self = this;
-        this.max_zoom_service.getMaxZoomAtLatLng(this.current.get_pos(), function (response) {
+        this.max_zoom_service.getMaxZoomAtLatLng(this.current.get_pos(), (response) => {
             if (response.status === google.maps.MaxZoomStatus.OK) {
                 self.max_zoom = response.zoom;
             } else {
@@ -312,7 +312,7 @@ App.fitMap = function () {
     }
 };
 
-App.startAutoPlay = function () {
+App.startAutoPlay = () => {
     'use strict';
 
     var self = this;
@@ -322,12 +322,12 @@ App.startAutoPlay = function () {
     if (this.autoplay_timer) {
         clearInterval(this.autoplay_timer);
     }
-    this.autoplay_timer = setInterval(function () {
+    this.autoplay_timer = setInterval(() => {
         self.loadAirport("");
     }, 30 * 1000);
 };
 
-App.stopAutoPlay = function () {
+App.stopAutoPlay = () => {
     'use strict';
 
     if (this.autoplay_timer) {
@@ -338,7 +338,7 @@ App.stopAutoPlay = function () {
     this.autoplay = false;
 };
 
-App.toggleAutoPlay = function () {
+App.toggleAutoPlay = () => {
     'use strict';
 
     if (this.autoplay) {
@@ -348,7 +348,7 @@ App.toggleAutoPlay = function () {
     }
 };
 
-App.openGoogleMaps = function () {
+App.openGoogleMaps = () => {
     'use strict';
 
     if (!this.current) {
@@ -360,7 +360,7 @@ App.openGoogleMaps = function () {
     window.open(url, '_blank');
 };
 
-App.openOurAirports = function () {
+App.openOurAirports = () => {
     'use strict';
 
     if (!this.current) {
@@ -372,7 +372,7 @@ App.openOurAirports = function () {
     window.open(url, '_blank');
 };
 
-App.openAboutOverlay = function () {
+App.openAboutOverlay = () => {
     'use strict';
 
     $('#controls').fadeOut(500);
@@ -380,7 +380,7 @@ App.openAboutOverlay = function () {
     $('#about-overlay').fadeIn(500);
 };
 
-App.closeAboutOverlay = function () {
+App.closeAboutOverlay = () => {
     'use strict';
 
     $('#about-overlay').fadeOut(500);
@@ -388,7 +388,7 @@ App.closeAboutOverlay = function () {
     $('#label-container').fadeIn(500);
 };
 
-App.jumpTo = function (id) {
+App.jumpTo = (id) => {
     'use strict';
 
     event.stopPropagation();
@@ -397,7 +397,7 @@ App.jumpTo = function (id) {
     this.loadAirport(id);
 };
 
-App.openInfoOverlay = function () {
+App.openInfoOverlay = () => {
     'use strict';
 
     this.stopAutoPlay();
@@ -423,7 +423,7 @@ App.openInfoOverlay = function () {
     $('#info-overlay').fadeIn(500);
 };
 
-App.closeInfoOverlay = function () {
+App.closeInfoOverlay = () => {
     'use strict';
 
     $('#info-overlay').fadeOut(500);
@@ -431,7 +431,7 @@ App.closeInfoOverlay = function () {
     $('#label-container').fadeIn(500);
 };
 
-App.updateLabel = function () {
+App.updateLabel = () => {
     'use strict';
 
     if (this.current) {
@@ -449,7 +449,7 @@ App.updateLabel = function () {
     }
 };
 
-App.onStartLoading = function () {
+App.onStartLoading = () => {
     'use strict';
 
     if (!this.loading) {
@@ -473,7 +473,7 @@ App.onStartLoading = function () {
     $('#container').prepend($('#map').clone(false).attr('id', 'map-buffer'));
 };
 
-App.onFinishLoading = function () {
+App.onFinishLoading = () => {
     'use strict';
 
     if (!this.loading) {
@@ -497,7 +497,7 @@ App.onFinishLoading = function () {
     this.loading = false;
 };
 
-App.loadAirport = function (icao) {
+App.loadAirport = (icao) => {
     'use strict';
 
     if (this.loading) {
@@ -510,7 +510,7 @@ App.loadAirport = function (icao) {
         sanitized_icao = this.sanitize_query(icao);
 
     if (sanitized_icao !== "") {
-        $.get(`/api/get/${sanitized_icao}`, function (data) {
+        $.get(`/api/get/${sanitized_icao}`, (data) => {
             if (data.airport !== undefined) {
                 self.loadAirportFromJson(data.airport);
             } else {
@@ -521,7 +521,7 @@ App.loadAirport = function (icao) {
             }
         });
     } else {
-        $.get("/api/random", function (json_data) {
+        $.get("/api/random", (json_data) => {
             if (json_data.airport !== undefined) {
                 self.loadAirportFromJson(json_data.airport);
             } else {
@@ -533,7 +533,7 @@ App.loadAirport = function (icao) {
     }
 };
 
-App.loadAirportFromJson = function (json_airport) {
+App.loadAirportFromJson = (json_airport) => {
     'use strict';
 
     if (json_airport.icao === undefined) {
@@ -544,17 +544,17 @@ App.loadAirportFromJson = function (json_airport) {
 
     this.current = new Airport();
     this.current.load_from_json(json_airport);
-    ///ga('send', 'event', 'map', 'load', this.current.get_icao());
+    this.track('map', 'load', this.current.get_icao());
 
-    google.maps.event.addListenerOnce(this.map, 'tilesloaded', function () {
-        $('#map-buffer').fadeOut(500, function () {
+    google.maps.event.addListenerOnce(this.map, 'tilesloaded', () => {
+        $('#map-buffer').fadeOut(500, () => {
             self.onFinishLoading();
         });
         self.updateLabel();
     });
     this.load_timer_running = true;
-    this.load_timer = setTimeout(function () {
-        $('#map-buffer').fadeOut(500, function () {
+    this.load_timer = setTimeout(() => {
+        $('#map-buffer').fadeOut(500, () => {
             self.onFinishLoading();
         });
         self.updateLabel();
@@ -564,14 +564,14 @@ App.loadAirportFromJson = function (json_airport) {
     this.fitMap();
 };
 
-App.setCookie = function (cname, cvalue, exdays) {
+App.setCookie = (cname, cvalue, exdays) => {
     'use strict';
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     document.cookie = `${cname}=${cvalue}; expires=${d.toUTCString()}`;
 };
 
-App.getCookie = function (cname) {
+App.getCookie = (cname) => {
     'use strict';
     var name = cname + "=",
         ca = document.cookie.split(';'),
@@ -589,7 +589,7 @@ App.getCookie = function (cname) {
     return "";
 };
 
-App.toggleFullScreen = function () {
+App.toggleFullScreen = () => {
     'use strict';
     var doc = window.document,
         docEl = doc.documentElement,
@@ -600,5 +600,12 @@ App.toggleFullScreen = function () {
         requestFullScreen.call(docEl);
     } else {
         cancelFullScreen.call(doc);
+    }
+};
+
+App.track = (...args) => {
+    'use strict';
+    if (typeof ga === 'function') {
+        ga('send', 'event', ...args);
     }
 };

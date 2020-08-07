@@ -46,7 +46,6 @@ class Airport {
         }
     }
 
-
     get_icao() {
         'use strict';
     
