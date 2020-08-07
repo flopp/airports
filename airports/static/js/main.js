@@ -573,7 +573,7 @@ App.setCookie = (cname, cvalue, exdays) => {
 
 App.getCookie = (cname) => {
     'use strict';
-    var name = cname + "=",
+    var name = `${cname}=`,
         ca = document.cookie.split(';'),
         i,
         c;
@@ -604,7 +604,6 @@ App.toggleFullScreen = () => {
 };
 
 App.track = (...args) => {
-    'use strict';
     if (typeof ga === 'function') {
         ga('send', 'event', ...args);
     }
