@@ -1,0 +1,2 @@
+{% for icao in icaos %}{{ config.BASE_URL }}{{ "/a/{}".format(icao) }}
+{% endfor %}

@@ -55,7 +55,7 @@ App.init = function (google_maps_key, airport_json) {
 
     // setup event handlers
     google.maps.event.addListener(this.map, 'click', function () {
-        ga('send', 'event', 'map', 'click');
+        ///ga('send', 'event', 'map', 'click');
         self.loadAirport("");
     });
 
@@ -65,23 +65,23 @@ App.init = function (google_maps_key, airport_json) {
     });
 
     $('#control-about').click(function () {
-        ga('send', 'event', 'sidebar', 'open about');
+        ///ga('send', 'event', 'sidebar', 'open about');
         self.openAboutOverlay();
     });
     $('#control-fullscreen').click(function () {
-        ga('send', 'event', 'sidebar', 'fullscreen');
+        ///ga('send', 'event', 'sidebar', 'fullscreen');
         self.toggleFullScreen();
     });
     $('#label-container').click(function () {
-        ga('send', 'event', 'label', 'open info', self.current.get_code());
+        ///ga('send', 'event', 'label', 'open info', self.current.get_icao());
         self.openInfoOverlay();
     });
     $('#control-random').click(function () {
-        ga('send', 'event', 'sidebar', 'random');
+        ///ga('send', 'event', 'sidebar', 'random');
         self.loadAirport("");
     });
     $('#control-play').click(function () {
-        ga('send', 'event', 'sidebar', 'play');
+        ///ga('send', 'event', 'sidebar', 'play');
         self.toggleAutoPlay();
     });
 
@@ -110,23 +110,23 @@ App.init = function (google_maps_key, airport_json) {
     });
 
     $('#info-overlay #open-google-maps').click(function (event) {
-        ga('send', 'event', 'info', 'google maps', self.current.get_code());
+        ///ga('send', 'event', 'info', 'google maps', self.current.get_icao());
         event.stopPropagation();
         self.openGoogleMaps();
     });
     $('#info-overlay #info-minimap').click(function (event) {
-        ga('send', 'event', 'info', 'mini map', self.current.get_code());
+        ///ga('send', 'event', 'info', 'mini map', self.current.get_icao());
         event.stopPropagation();
         self.openGoogleMaps();
     });
     $('#info-overlay #open-ourairports').click(function (event) {
-        ga('send', 'event', 'info', 'ourairports', self.current.get_code());
+        ///ga('send', 'event', 'info', 'ourairports', self.current.get_icao());
         event.stopPropagation();
         self.openOurAirports();
     });
 
     $('#control-search').click(function () {
-        ga('send', 'event', 'sidebar', 'search');
+        ///ga('send', 'event', 'sidebar', 'search');
         self.showSearch();
     });
     $('#search-overlay-search').click(function () {
@@ -155,7 +155,7 @@ App.displayMessage = function (message) {
 
     var self = this;
 
-    ga('send', 'event', 'map', 'message', message);
+    ///ga('send', 'event', 'map', 'message', message);
     $('#message-container').text(message);
     $('#message-container').fadeIn(500);
 
@@ -225,7 +225,7 @@ App.performSearch = function () {
     var self = this,
         query = $('#search-overlay-query').val();
     this.closeSearch();
-    ga('send', 'event', 'search', 'query', query);
+    ///ga('send', 'event', 'search', 'query', query);
     $.post("/api/search", {
         q: query
     }, function (data) {
@@ -355,7 +355,7 @@ App.openGoogleMaps = function () {
         return;
     }
 
-    var url = "https://www.google.com/maps/@" + this.map.getCenter().lat().toFixed(6) + "," + this.map.getCenter().lng().toFixed(6) + "," + this.map.getZoom() + "z";
+    var url = `https://www.google.com/maps/@${this.map.getCenter().lat().toFixed(6)},${this.map.getCenter().lng().toFixed(6)},${this.map.getZoom()}z`;
 
     window.open(url, '_blank');
 };
@@ -367,7 +367,7 @@ App.openOurAirports = function () {
         return;
     }
 
-    var url = "http://ourairports.com/airports/" + this.current.get_code();
+    var url = `http://ourairports.com/airports/${this.current.get_icao()}`;
 
     window.open(url, '_blank');
 };
@@ -404,8 +404,11 @@ App.openInfoOverlay = function () {
     $('#info-label').text(this.current.get_label());
     $('#info-location').text(this.current.get_location_name());
 
-    var url = "https://maps.googleapis.com/maps/api/staticmap?key=" + this.google_maps_key + "&zoom=2&size=500x300&markers=color:blue|" + this.map.getCenter().lat().toFixed(6) + "," + this.map.getCenter().lng().toFixed(6);
-    $('#info-minimap').attr("src", url);
+    const lat = this.map.getCenter().lat();
+    const lng = this.map.getCenter().lng();
+    const x = (512 * (lng + 180)) / 360;
+    const y = 200 - (512 * Math.log(Math.tan((Math.PI / 4) + (lat * Math.PI / 360))) / (2 * Math.PI));
+    $("#info-minimap-marker").css({top: y - 16, left: x - 16});
 
     if (this.current.get_wiki_data()) {
         $('#wiki').removeClass('hidden');
@@ -432,11 +435,11 @@ App.updateLabel = function () {
     'use strict';
 
     if (this.current) {
-        window.history.replaceState({}, this.current.get_label() + " [Random Aiports]", "/a/" + this.current.get_code());
-        $('link[rel="canonical"]').attr('href', this.base_url + '/a/' + this.current.get_code());
+        window.history.replaceState({}, `${this.current.get_label()} [Random Aiports]`, `/a/${this.current.get_icao()}`);
+        $('link[rel="canonical"]').attr('href', `${this.base_url}/a/${this.current.get_icao()}`);
         $('#label').html(this.current.get_label());
         $('#location').html(this.current.get_location_name());
-        document.title = this.current.get_label() + " [Random Aiports]";
+        document.title = `${this.current.get_label()} [Random Aiports]`;
     } else {
         window.history.replaceState({}, "[Random Aiports]", "/");
         $('link[rel="canonical"]').attr('href', this.base_url);
@@ -494,7 +497,7 @@ App.onFinishLoading = function () {
     this.loading = false;
 };
 
-App.loadAirport = function (airport_id) {
+App.loadAirport = function (icao) {
     'use strict';
 
     if (this.loading) {
@@ -504,23 +507,23 @@ App.loadAirport = function (airport_id) {
     this.onStartLoading();
 
     var self = this,
-        sanitized_id = this.sanitize_query(airport_id);
+        sanitized_icao = this.sanitize_query(icao);
 
-    if (sanitized_id !== "") {
-        $.get("/api/get/" + sanitized_id, function (data) {
-            if (data.airport) {
+    if (sanitized_icao !== "") {
+        $.get(`/api/get/${sanitized_icao}`, function (data) {
+            if (data.airport !== undefined) {
                 self.loadAirportFromJson(data.airport);
             } else {
-                self.displayMessage('Error loading requested airport (' + sanitized_id + '). Loading a random airport instead.');
+                self.displayMessage(`Error loading requested airport (${sanitized_icao}). Loading a random airport instead.`);
                 self.current = null;
                 self.onFinishLoading();
                 self.loadAirport("");
             }
         });
     } else {
-        $.get("/api/random", function (data) {
-            if (data.airport !== undefined && data.airport.id !== undefined) {
-                self.loadAirportFromJson(data.airport);
+        $.get("/api/random", function (json_data) {
+            if (json_data.airport !== undefined) {
+                self.loadAirportFromJson(json_data.airport);
             } else {
                 self.displayMessage('Error loading random airport.');
                 self.current = null;
@@ -533,7 +536,7 @@ App.loadAirport = function (airport_id) {
 App.loadAirportFromJson = function (json_airport) {
     'use strict';
 
-    if (json_airport.id === undefined) {
+    if (json_airport.icao === undefined) {
         return;
     }
 
@@ -541,7 +544,7 @@ App.loadAirportFromJson = function (json_airport) {
 
     this.current = new Airport();
     this.current.load_from_json(json_airport);
-    ga('send', 'event', 'map', 'load', this.current.get_code());
+    ///ga('send', 'event', 'map', 'load', this.current.get_icao());
 
     google.maps.event.addListenerOnce(this.map, 'tilesloaded', function () {
         $('#map-buffer').fadeOut(500, function () {
@@ -563,10 +566,9 @@ App.loadAirportFromJson = function (json_airport) {
 
 App.setCookie = function (cname, cvalue, exdays) {
     'use strict';
-    var d = new Date();
+    const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    var expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + "; " + expires;
+    document.cookie = `${cname}=${cvalue}; expires=${d.toUTCString()}`;
 };
 
 App.getCookie = function (cname) {

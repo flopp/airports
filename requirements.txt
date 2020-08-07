@@ -1,0 +1,9 @@
+appdirs
+click
+flask
+Flask-Caching
+pycountry
+requests
+s2sphere
+SPARQLWrapper
+wikipedia

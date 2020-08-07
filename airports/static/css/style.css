@@ -144,9 +144,9 @@ ul {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
     top: 40px;
-    right: 28px;
-    width: 28px;
-    height: 140px;
+    right: 228px;
+    width: 32px;
+    height: 160px;
     margin: 10px;
     font-size: 12px;
     z-index: 300;
@@ -192,8 +192,8 @@ ul {
     position: absolute;
     bottom: 28px;
     right: 0px;
-    height: 140px;
-    width: 28px;
+    height: 160px;
+    width: 32px;
     margin: 10px;
     font-size: 12px;
     z-index: 300;
@@ -204,9 +204,9 @@ ul {
 
 .my-control {
   display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -214,7 +214,7 @@ ul {
 
 #controls .column {
   position: absolute;
-  width: 28px;
+  width: 32px;
   top: 0px;
   left: 0px;
 }
@@ -238,7 +238,20 @@ ul {
 }
 
 #info-minimap {
+  position: relative;
   cursor: pointer;
+  width: 512px;
+  height: 400px;
+  background-image: url("../img/map.png");
+  background-position: center;
+}
+
+#info-minimap-marker {
+  position: absolute;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url("../img/marker.png");
 }
 
 .hidden {

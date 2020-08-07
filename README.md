@@ -1,7 +1,6 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/flopp/airports_map/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/flopp/airports_map/?branch=master)
-[![License MIT](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/flopp/airports_map/blob/master/LICENSE)
+[![Any color you like](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black) [![License MIT](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/flopp/airports/blob/master/LICENSE)
 
-# airports_map
+# airports
 
 Fullscreen satellite map randomly showing the world's airports.
 
@@ -26,7 +25,4 @@ Website: https://airports.flopp.net/
 * Wikidata & Wikipedia for airport descriptions
 
 ## License
-**airports_map** is governed by a MIT-style license that can be found in the [LICENSE](https://github.com/flopp/airports_map/blob/master/LICENSE) file.
-
-
-
+**airports** is governed by a MIT-style license that can be found in the [LICENSE](https://github.com/flopp/airports/blob/master/LICENSE) file.

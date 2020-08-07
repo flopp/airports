@@ -1,2 +1,0 @@
-{% for id in ids %}{{ config.BASE_URL }}{{ "/a/{}".format(id) }}
-{% endfor %}

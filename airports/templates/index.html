@@ -28,7 +28,10 @@
     <div class="overlay-content">
       <h1 id="info-label">{{ airport.name }}</h1>
       <h2 id="info-location">{{ airport.location }}</h2>
-      <p><img id="info-minimap"/></p>
+      <p>
+        <div id="info-minimap">
+          <div id="info-minimap-marker"></div>
+        </div>
       {% if airport.wiki_data|length > 0 %}
       <div id="wiki">
       <p id="wiki_data">{{ airport.wiki_data }}</p>
@@ -63,7 +66,6 @@
       <h1>Random Airports</h1>
       <p>
         This app shows satellite views of random airports. Its aim is to introduce you to the variety of airport structures embedded into the landscape.
-        Parts of the website are heavily inspired by David Schmidt's website <a href="http://chuchichechocha.com" target="_blank">chuchichechocha.com</a>.
       </p>
 
       <h2>Usage</h2>
@@ -93,7 +95,7 @@
       <h2>Author</h2>
       <p>
         This is brought to you by me, <a href="https://www.florian-pigorsch.de/" target="_blank">Florian Pigorsch</a>.
-        Feel free to contact me via <a href="https://google.com/+FlorianPigorsch" target="_blank">Google+</a> or <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
+        Feel free to contact me via <a href="mailto:mail@florian-pigorsch.de" target="_blank">mail</a>.
         The source code of this app can be found at <a href="https://github.com/flopp/airports_map" target="_blank">Github</a>.
       </p>
       
@@ -111,7 +113,7 @@
         Here's a list of {{ airports|length }} random airports:
         <ul>
         {% for a in airports %}
-            <li><a href="/a/{{ a.id }}">{{ a.name }}</a></li>
+            <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
         {% endfor %}
         </ul>
       </p>
@@ -166,7 +168,7 @@
         <p>
         <ul>
         {% for a in airports %}
-            <li><a href="/a/{{ a.id }}">{{ a.name }}</a></li>
+            <li><a href="/a/{{ a.icao }}">{{ a.name }}</a></li>
         {% endfor %}
         </ul>
         </p>
